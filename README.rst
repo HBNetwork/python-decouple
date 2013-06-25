@@ -52,9 +52,9 @@ Use it on your ``settings.py``.
 .. code-block:: python
 
     SECRET_KEY = config('SECRET_KEY')
-    DEBUG = config('DEBUG', default=False, type=bool)
+    DEBUG = config('DEBUG', default=False, cast=bool)
     EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-    EMAIL_PORT = config('EMAIL_PORT', default=25, type=int)
+    EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 
 
 How I use it
@@ -77,14 +77,14 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     config = Config(PROJECT_ROOT.child('settings.ini'))
 
-    DEBUG = config('DEBUG', default=False, type=bool)
+    DEBUG = config('DEBUG', default=False, cast=bool)
     TEMPLATE_DEBUG = DEBUG
 
     DATABASES = {
         'default': config(
             'DATABASE_URL',
             default='sqlite:///' + PROJECT_ROOT.child('database.db'),
-            type=db_url
+            cast=db_url
         )
     }
 
@@ -97,10 +97,10 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
     SECRET_KEY = config('SECRET_KEY')
 
     EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-    EMAIL_PORT = config('EMAIL_PORT', default=25, type=int)
+    EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, type=bool)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
 
     # ...
 

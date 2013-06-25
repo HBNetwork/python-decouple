@@ -19,20 +19,20 @@ class Config(object):
         self.parser = SafeConfigParser()
         self.parser.readfp(open(config_file))
 
-    def get(self, option, default=u'', type=unicode):
+    def get(self, option, default=u'', cast=unicode):
         """
         Return the value for option or default option is not defined.
         """
         if not self.parser.has_option(self.SECTION, option):
-            return type(default)
+            return cast(default)
 
         getter = {
             bool: self.parser.getboolean,
             float: self.parser.getfloat,
             int: self.parser.getint,
-        }.get(type, self.parser.get)
+        }.get(cast, self.parser.get)
 
-        return type(getter(self.SECTION, option))
+        return cast(getter(self.SECTION, option))
 
     def __call__(self, *args, **kwargs):
         """
