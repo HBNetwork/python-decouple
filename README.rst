@@ -104,6 +104,19 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     # ...
 
+A sample INI file
+-----------------
+
+.. code-block:: ini
+
+    [settings]
+    DEBUG=True
+    SECRET_KEY=ARANDOMSECRETKEY
+    DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
+    PERCENTILE=90%%
+
+*IMPORTANT*: Since you can use `string interpolation on values <http://docs.python.org/2/library/configparser.html>`_, to represent the character ``%`` you need to escape it as ``%%``.
+
 License
 =======
 
