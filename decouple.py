@@ -1,4 +1,6 @@
 # coding: utf-8
+import os
+import sys
 from ConfigParser import SafeConfigParser
 
 
@@ -132,3 +134,55 @@ class ConfigEnv(ConfigBase):
         return cast(self.data[option])
 
 
+class AutoConfig(object):
+    """
+    Autodetects the config file and type.
+    """
+    SUPPORTED = {
+        'settings.ini': ConfigIni,
+        '.env': ConfigEnv,
+    }
+
+    def __init__(self):
+        self.config = None
+
+    def _find_file(self, path):
+        # look for all files in the current path
+        for filename in self.SUPPORTED:
+            file = os.path.join(path, filename)
+            if os.path.exists(file):
+                return file
+
+        # search the parent
+        parent = os.path.dirname(path)
+        if parent and parent != os.path.sep:
+            return self._find_file(parent)
+
+        # reached root without finding any files.
+        return None
+
+    def _load(self, path):
+        file = self._find_file(path)
+
+        if not file:
+            raise RuntimeError("No supported config file found.")
+
+        klass = self.SUPPORTED.get(os.path.basename(file))
+        self.config = klass(file)
+
+    def _caller_path(self):
+        # MAGIC! Get the caller's module path.
+        frame = sys._getframe()
+        path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
+        return path
+
+    def __call__(self, *args, **kwargs):
+        if not self.config:
+            self._load(self._caller_path())
+
+        return self.config(*args, **kwargs)
+
+
+# A pré-instantiated AutoConfig to improve decouple's usability
+# now just import config and start using with no configuration.
+config = AutoConfig()
