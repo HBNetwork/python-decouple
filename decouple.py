@@ -2,7 +2,27 @@
 from ConfigParser import SafeConfigParser
 
 
-class ConfigIni(object):
+class ConfigBase(object):
+    """
+    Base class to make the API explicit.
+    """
+    def __init__(self, config_file):
+        raise NotImplemented
+
+    def get(self, option, default=u'', cast=unicode):
+        """
+        Return the value for option or default option is not defined.
+        """
+        raise NotImplemented
+
+    def __call__(self, *args, **kwargs):
+        """
+        Convenient shortcut to get.
+        """
+        return self.get(*args, **kwargs)
+
+
+class ConfigIni(ConfigBase):
     """
     Wrapper around SafeConfigParser to deal with Django environment settings.
     """
@@ -36,12 +56,6 @@ class ConfigIni(object):
 
         return cast(getter(self.SECTION, option))
 
-    def __call__(self, *args, **kwargs):
-        """
-        Convenient shortcut to get.
-        """
-        return self.get(*args, **kwargs)
-
     def set(self, option, value):
         """
         Add a config value to configuration instance.
@@ -71,7 +85,7 @@ class ConfigIni(object):
             self.parser.write(f)
 
 
-class ConfigEnv(object):
+class ConfigEnv(ConfigBase):
     """
     Handle .env file format used by Foreman.
     """
@@ -117,9 +131,4 @@ class ConfigEnv(object):
 
         return cast(self.data[option])
 
-    def __call__(self, *args, **kwargs):
-        """
-        Convenient shortcut to get.
-        """
-        return self.get(*args, **kwargs)
 
