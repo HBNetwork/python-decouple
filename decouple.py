@@ -9,6 +9,8 @@ class Config(object):
     SECTION = 'settings'
 
     def __init__(self, config_file):
+        self.config_file = None
+        self.parser = None
         self.load(config_file)
 
     def load(self, config_file):
