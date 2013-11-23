@@ -2,7 +2,7 @@
 from ConfigParser import SafeConfigParser
 
 
-class Config(object):
+class ConfigIni(object):
     """
     Wrapper around SafeConfigParser to deal with Django environment settings.
     """
