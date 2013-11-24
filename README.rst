@@ -9,7 +9,7 @@ It also makes easy for you to:
 #. store parameters on *ini* or *.env* files;
 #. define comprehensive default values;
 #. properly convert values to the correct data type;
-#. have **only one** `settings.py` to rule all your instances.
+#. have **only one** ``settings.py`` to rule all your instances.
 
 .. image:: https://travis-ci.org/henriquebastos/django-decouple.png?branch=master
     :target: https://travis-ci.org/henriquebastos/django-decouple
@@ -32,9 +32,9 @@ You should be able to change *instance settings* without redeploying your app.
 What about environment variables?
 ---------------------------------
 
-*Envvars* works, but since `os.environ` only returns strings, it's tricky.
+*Envvars* works, but since ``os.environ`` only returns strings, it's tricky.
 
-Let's say you have an *envvar* `DEBUG=False`. If you run:
+Let's say you have an *envvar* ``DEBUG=False``. If you run:
 
 .. code-block:: python
 
@@ -43,9 +43,9 @@ Let's say you have an *envvar* `DEBUG=False`. If you run:
     else:
         print False
 
-It will print **True**, because `os.environ['DEBUG']` returns the **string** `"False"`.
+It will print **True**, because ``os.environ['DEBUG']`` returns the **string** ``"False"``.
 
-*Decouple* provides a solution that doesn't look like a workaround: `config('DEBUG', cast=bool)`.
+*Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
 
 Install
 -------
@@ -82,7 +82,7 @@ Where the settings data are stored?
 Ini file
 ~~~~~~~~~
 
-Simply create a `settings.ini` next to your `settings.py` in the form:
+Simply create a ``settings.ini`` next to your ``settings.py`` in the form:
 
 .. code-block:: ini
 
@@ -93,12 +93,12 @@ Simply create a `settings.ini` next to your `settings.py` in the form:
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%%
 
-*Note*: Since `ConfigParser` supports *string interpolation*, to represent the character `%` you need to escape it as `%%`.
+*Note*: Since ``ConfigParser`` supports *string interpolation*, to represent the character ``%`` you need to escape it as ``%%``.
 
 Env file
 ~~~~~~~~~
 
-Simply create a `.env` text file on your repository's root directory in the form:
+Simply create a ``.env`` text file on your repository's root directory in the form:
 
 .. code-block:: console
 
@@ -111,7 +111,7 @@ Simply create a `.env` text file on your repository's root directory in the form
 How do I use it?
 ----------------
 
-Given that I have a `.env` file at my repository root directory, here is a snippet of my ``settings.py``.
+Given that I have a ``.env`` file at my repository root directory, here is a snippet of my ``settings.py``.
 
 I also recommend using `unipath <https://pypi.python.org/pypi/Unipath>`_
 and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
@@ -156,27 +156,27 @@ How it works?
 
 *Decouple* is made of 3 classes:
 
-- `ConfigIni`
+- ``ConfigIni``
 
     Can read and write ini files.
 
-- `ConfigEnv`
+- ``ConfigEnv``
 
-    Can read `.env` files and when a parameter does not exist there,
-    it tries to find it on `os.environ`.
+    Can read ``.env`` files and when a parameter does not exist there,
+    it tries to find it on ``os.environ``.
 
     This process does **not** change nor add any environment variables.
 
-- `AutoConfig`
+- ``AutoConfig``
 
-    Recursively searches up your `settings.py` path looking for a
-    `settings.ini` or a `.env` file.
+    Recursively searches up your ``settings.py`` path looking for a
+    ``settings.ini`` or a ``.env`` file.
 
-The `config` object is a default instance of `AutoConfig` to improve
+The **config** object is a default instance of ``AutoConfig`` to improve
 *decouple*'s usage.
 
 If you prefer or need to explicitly define your storage file, directly use
-`ConfigIni` or `ConfigEnv`.
+``ConfigIni`` or ``ConfigEnv``.
 
 License
 =======
