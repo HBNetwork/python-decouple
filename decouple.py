@@ -95,7 +95,7 @@ class ConfigEnv(ConfigBase):
                  '0': False, 'no': False, 'false': False, 'off': False}
 
     def __init__(self, config_file):
-        self.load(config_file)
+        self.data = self._read_dotenv(config_file)
 
     def _read_dotenv(self, config_file):
         """
