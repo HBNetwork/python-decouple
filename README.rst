@@ -11,6 +11,9 @@ It also makes easy for you to:
 #. properly convert values to the correct data type;
 #. have **only one** `settings.py` to rule all your instances.
 
+.. image:: https://travis-ci.org/henriquebastos/django-decouple.png?branch=master
+    :target: https://travis-ci.org/henriquebastos/django-decouple
+
 Why?
 ----
 
