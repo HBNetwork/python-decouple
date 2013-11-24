@@ -1,0 +1,7 @@
+language: python
+env:
+- TOXENV=py27
+- TOXENV=py33
+install:
+ - pip install tox==1.6.1
+script: tox
