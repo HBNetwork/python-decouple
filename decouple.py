@@ -97,20 +97,19 @@ class ConfigEnv(ConfigBase):
     def __init__(self, config_file):
         self.load(config_file)
 
-    def load(self, config_file):
+    def _read_dotenv(self, config_file):
         """
-        Load config data from a file. Taken from jacobian's django-dotenv
+        Read config data from a file. Taken from jacobian's django-dotenv
         """
-        self.config_file = config_file
-        self.data = {}
-
+        data = {}
         for line in open(config_file):
             line = line.strip()
             if not line or line.startswith('#') or '=' not in line:
                 continue
             k, v = line.split('=', 1)
             v = v.strip("'").strip('"')
-            self.data[k] = v
+            data[k] = v
+        return data
 
     def _cast_boolean(self, value):
         """
