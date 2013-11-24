@@ -124,13 +124,19 @@ class ConfigEnv(ConfigBase):
         """
         Return the value for option or default option is not defined.
         """
+        if option not in self.data and \
+           option not in os.environ:
+            # If default was not defined return it, else make sure to cast.
+            # This is usefull for cases like dj-database-url.parse.
+            if default == u'':
+                return default
+            else:
+                return cast(default)
+
         if cast is bool:
             cast = self._cast_boolean
 
-        if option not in self.data:
-            return cast(default)
-
-        return cast(self.data[option])
+        return cast(self.data.get(option) or os.environ[option])
 
 
 class AutoConfig(object):

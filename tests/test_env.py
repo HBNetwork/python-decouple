@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 import pytest
 from mock import patch, mock_open
 from decouple import ConfigEnv
@@ -52,3 +53,11 @@ def test_env_bool_false():
         assert False == config('KeyZero', cast=bool)
         assert False == config('KeyNo', cast=bool)
         assert False == config('KeyOff', cast=bool)
+
+def test_env_os_environ():
+    os.environ['KeyFallback'] = 'On'
+    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
+        config = ConfigEnv('.env')
+        assert True == config('KeyTrue', cast=bool)
+        assert True == config('KeyFallback', cast=bool)
+    del os.environ['KeyFallback']
