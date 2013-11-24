@@ -156,14 +156,27 @@ How it works?
 
 *Decouple* is made of 3 classes:
 
-- `ConfigIni` that can read and write ini files;
-- `ConfigEnv` that can read env files;
-- `AutoConfig` that recursively searches up your `settings.py` path looking
-  for a `settings.ini` or a `.env` file.
+- `ConfigIni`
 
-The `config` object is a default instance of `AutoConfig` to improve *decouple*'s usage.
+    Can read and write ini files.
 
-If you prefer or need to explicitly define your storage, directly use `ConfigIni` or `ConfigEnv`.
+- `ConfigEnv`
+
+    Can read `.env` files and when a parameter does not exist there,
+    it tries to find it on `os.environ`.
+
+    This process does **not** change nor add any environment variables.
+
+- `AutoConfig`
+
+    Recursively searches up your `settings.py` path looking for a
+    `settings.ini` or a `.env` file.
+
+The `config` object is a default instance of `AutoConfig` to improve
+*decouple*'s usage.
+
+If you prefer or need to explicitly define your storage file, directly use
+`ConfigIni` or `ConfigEnv`.
 
 License
 =======
