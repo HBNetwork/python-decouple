@@ -33,7 +33,7 @@ def test_ini_percent_escape():
         config = ConfigIni('settings.ini')
         assert '%' == config('PercentIsEscaped')
 
-def test_ini_interpolatin():
+def test_ini_interpolation():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
         config = ConfigIni('settings.ini')
         assert 'off' == config('Interpolation')
