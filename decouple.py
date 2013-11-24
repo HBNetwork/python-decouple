@@ -116,7 +116,7 @@ class ConfigEnv(ConfigBase):
         Helper to convert config values to boolean as ConfigParser do.
         """
         if value.lower() not in self._BOOLEANS:
-            raise ValueError, 'Not a boolean: %s' % v
+            raise ValueError, 'Not a boolean: %s' % value
 
         return self._BOOLEANS[value.lower()]
 
