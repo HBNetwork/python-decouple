@@ -159,14 +159,10 @@ class AutoConfig(object):
             return self._find_file(parent)
 
         # reached root without finding any files.
-        return None
+        raise RuntimeError("No supported config file found.")
 
     def _load(self, path):
         file = self._find_file(path)
-
-        if not file:
-            raise RuntimeError("No supported config file found.")
-
         klass = self.SUPPORTED.get(os.path.basename(file))
         self.config = klass(file)
 
