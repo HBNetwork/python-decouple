@@ -40,7 +40,7 @@ Let's say you have an *envvar* `DEBUG=False`. If you run:
     else:
         print False
 
-Because `os.environ['DEBUG']` returns the *string* `"False"` the code will print **True**.
+It will print **True**, because `os.environ['DEBUG']` returns the **string** `"False"`.
 
 *Decouple* provides a solution that doesn't look like a workaround: `config('DEBUG', cast=bool)`.
 
