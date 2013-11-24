@@ -1,7 +1,19 @@
 # coding: utf-8
 import os
 import sys
-from ConfigParser import SafeConfigParser
+
+
+# Useful for very coarse version differentiation.
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    from configparser import ConfigParser
+    string_type = str
+    string_empty = ''
+else:
+    from ConfigParser import SafeConfigParser as ConfigParser
+    string_type = unicode
+    string_empty = u''
 
 
 class ConfigBase(object):
@@ -11,7 +23,7 @@ class ConfigBase(object):
     def __init__(self, config_file):
         raise NotImplemented
 
-    def get(self, option, default=u'', cast=unicode):
+    def get(self, option, default=string_empty, cast=string_type):
         """
         Return the value for option or default option is not defined.
         """
@@ -26,7 +38,7 @@ class ConfigBase(object):
 
 class ConfigIni(ConfigBase):
     """
-    Wrapper around SafeConfigParser to deal with Django environment settings.
+    Wrapper around ConfigParser to deal with Django environment settings.
     """
     SECTION = 'settings'
 
@@ -40,10 +52,10 @@ class ConfigIni(ConfigBase):
         Load config data from a file.
         """
         self.config_file = config_file
-        self.parser = SafeConfigParser()
+        self.parser = ConfigParser()
         self.parser.readfp(open(config_file))
 
-    def get(self, option, default=u'', cast=unicode):
+    def get(self, option, default=string_empty, cast=string_type):
         """
         Return the value for option or default option is not defined.
         """
@@ -65,7 +77,7 @@ class ConfigIni(ConfigBase):
         if not self.parser.has_section(self.SECTION):
             self.parser.add_section(self.SECTION)
 
-        self.parser.set(self.SECTION, option, unicode(value))
+        self.parser.set(self.SECTION, option, string_type(value))
 
     def remove(self, option):
         """
@@ -116,11 +128,11 @@ class ConfigEnv(ConfigBase):
         Helper to convert config values to boolean as ConfigParser do.
         """
         if value.lower() not in self._BOOLEANS:
-            raise ValueError, 'Not a boolean: %s' % value
+            raise ValueError('Not a boolean: %s' % value)
 
         return self._BOOLEANS[value.lower()]
 
-    def get(self, option, default=u'', cast=unicode):
+    def get(self, option, default=string_empty, cast=string_type):
         """
         Return the value for option or default option is not defined.
         """
@@ -128,7 +140,7 @@ class ConfigEnv(ConfigBase):
            option not in os.environ:
             # If default was not defined return it, else make sure to cast.
             # This is usefull for cases like dj-database-url.parse.
-            if default == u'':
+            if default == string_empty:
                 return default
             else:
                 return cast(default)

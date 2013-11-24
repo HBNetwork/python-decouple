@@ -23,6 +23,7 @@ setup(name='django-decouple',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
           'Topic :: Software Development :: Libraries',
       ],
       url='http://github.com/henriquebastos/django-decouple/',)

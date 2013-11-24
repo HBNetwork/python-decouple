@@ -1,8 +1,16 @@
 # coding: utf-8
-import pytest
+import sys
 from mock import patch, mock_open
 from decouple import ConfigIni
-from StringIO import StringIO
+
+# Useful for very coarse version differentiation.
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    from io import StringIO
+else:
+    from StringIO import StringIO
+
 
 
 INIFILE = '''
