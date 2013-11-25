@@ -26,3 +26,11 @@ def test_autoconfig_none():
     with patch('os.path.exists', return_value=False):
         assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_autoconfig_exception():
+    os.environ['KeyFallback'] = 'On'
+    config = AutoConfig()
+    with patch('os.path.exists', side_effect=Exception('PermissionDenied')):
+        assert True == config('KeyFallback', cast=bool)
+    del os.environ['KeyFallback']
