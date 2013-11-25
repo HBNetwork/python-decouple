@@ -204,7 +204,10 @@ class AutoConfig(object):
         return ''
 
     def _load(self, path):
-        file = self._find_file(path)
+        try:
+            file = self._find_file(path)
+        except:
+            file = ''
         klass = self.SUPPORTED.get(os.path.basename(file))
 
         if not klass:
