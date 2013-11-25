@@ -20,8 +20,9 @@ def test_autoconfig_ini():
 
 
 def test_autoconfig_none():
+    os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'none')
     with patch('os.path.exists', return_value=False):
-        with patch.object(config, '_caller_path', return_value="/"):
-            with pytest.raises(RuntimeError):
-                config('KEY')
+        assert True == config('KeyFallback', cast=bool)
+    del os.environ['KeyFallback']

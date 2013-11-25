@@ -151,6 +151,31 @@ class ConfigEnv(ConfigBase):
         return cast(self.data.get(option) or os.environ[option])
 
 
+class ConfigShell(ConfigEnv):
+    """
+    Fallback class that only look on os.envirion.
+    """
+    def __init__(self, config_file=None):
+        pass
+
+    def get(self, option, default=string_empty, cast=string_type):
+        """
+        Return the value for option or default option is not defined.
+        """
+        if option not in os.environ:
+            # If default was not defined return it, else make sure to cast.
+            # This is usefull for cases like dj-database-url.parse.
+            if default == string_empty:
+                return default
+            else:
+                return cast(default)
+
+        if cast is bool:
+            cast = self._cast_boolean
+
+        return cast(os.environ[option])
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
@@ -176,11 +201,15 @@ class AutoConfig(object):
             return self._find_file(parent)
 
         # reached root without finding any files.
-        raise RuntimeError("No supported config file found.")
+        return ''
 
     def _load(self, path):
         file = self._find_file(path)
         klass = self.SUPPORTED.get(os.path.basename(file))
+
+        if not klass:
+            klass = ConfigShell
+
         self.config = klass(file)
 
     def _caller_path(self):
