@@ -29,8 +29,8 @@ The first 2 are *project settings* the last 3 are *instance settings*.
 
 You should be able to change *instance settings* without redeploying your app.
 
-What about environment variables?
----------------------------------
+What not just use environment variables?
+----------------------------------------
 
 *Envvars* works, but since ``os.environ`` only returns strings, it's tricky.
 
@@ -44,6 +44,7 @@ Let's say you have an *envvar* ``DEBUG=False``. If you run:
         print False
 
 It will print **True**, because ``os.environ['DEBUG']`` returns the **string** ``"False"``.
+Since it's a non-empty string, it will be evaluated as True.
 
 *Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
 
@@ -145,8 +146,8 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     EMAIL_HOST = config('EMAIL_HOST', default='localhost')
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-    EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
     EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
 
     # ...
@@ -154,29 +155,37 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 How it works?
 -------------
 
-*Decouple* is made of 3 classes:
+*Decouple* is made of 5 classes:
 
-- ``ConfigIni``
 
-    Can read and write ini files.
+- ``Config``
 
-- ``ConfigEnv``
+    Coordinates all the configuration retrieval.
+
+- ``RepositoryIni``
+
+    Can read values from ini files.
+
+- ``RepositoryEnv``
 
     Can read ``.env`` files and when a parameter does not exist there,
     it tries to find it on ``os.environ``.
 
     This process does **not** change nor add any environment variables.
 
+- ``RepositoryShell``
+
+    Can only read values from ``os.environ``.
+
 - ``AutoConfig``
 
-    Recursively searches up your ``settings.py`` path looking for a
+    Detects which configuration repository you're using.
+
+    It recursively searches up your ``settings.py`` path looking for a
     ``settings.ini`` or a ``.env`` file.
 
-The **config** object is a default instance of ``AutoConfig`` to improve
+The **config** object is an instance of ``AutoConfig`` to improve
 *decouple*'s usage.
-
-If you prefer or need to explicitly define your storage file, directly use
-``ConfigIni`` or ``ConfigEnv``.
 
 License
 =======
