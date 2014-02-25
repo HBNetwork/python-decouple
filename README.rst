@@ -13,6 +13,19 @@ It also makes easy for you to:
 
 .. image:: https://travis-ci.org/henriquebastos/django-decouple.png?branch=master
     :target: https://travis-ci.org/henriquebastos/django-decouple
+    :alt: Test Status
+
+.. image:: https://landscape.io/github/henriquebastos/django-decouple/master/landscape.png
+    :target: https://landscape.io/github/henriquebastos/django-decouple/master
+    :alt: Code Helth
+
+.. image:: https://pypip.in/v/django-decouple/badge.png
+    :target: https://crate.io/packages/django-decouple/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/django-decouple/badge.png
+    :target: https://crate.io/packages/django-decouple/
+    :alt: Number of PyPI downloads
 
 Why?
 ----
