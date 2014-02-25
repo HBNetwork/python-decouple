@@ -50,7 +50,7 @@ class Config(object):
         """
         Return the value for option or default if defined.
         """
-        if self.repository.has_key(option):
+        if option in self.repository:
             value = self.repository.get(option)
         else:
             value = default
@@ -76,7 +76,7 @@ class RepositoryBase(object):
     def __init__(self, source):
         raise NotImplementedError
 
-    def has_key(self, key):
+    def __contains__(self, key):
         raise NotImplementedError
 
     def get(self, key):
@@ -93,7 +93,7 @@ class RepositoryIni(RepositoryBase):
         self.parser = ConfigParser()
         self.parser.readfp(open(source))
 
-    def has_key(self, key):
+    def __contains__(self, key):
         return self.parser.has_option(self.SECTION, key)
 
     def get(self, key):
@@ -115,7 +115,7 @@ class RepositoryEnv(RepositoryBase):
             v = v.strip("'").strip('"')
             self.data[k] = v
 
-    def has_key(self, key):
+    def __contains__(self, key):
         return key in self.data or key in os.environ
 
     def get(self, key):
@@ -129,7 +129,7 @@ class RepositoryShell(RepositoryBase):
     def __init__(self, source=None):
         pass
 
-    def has_key(self, key):
+    def __contains__(self, key):
         return key in os.environ
 
     def get(self, key):
