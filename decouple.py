@@ -119,7 +119,7 @@ class RepositoryEnv(RepositoryBase):
         return key in self.data or key in os.environ
 
     def get(self, key):
-        return self.data[key] or os.environ[key]
+        return self.data.get(key) or os.environ[key]
 
 
 class RepositoryShell(RepositoryBase):
