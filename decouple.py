@@ -102,7 +102,7 @@ class RepositoryIni(RepositoryBase):
 
 class RepositoryEnv(RepositoryBase):
     """
-    Retrieves option keys from .env files with fall back to os.env.
+    Retrieves option keys from .env files with fall back to os.environ.
     """
     def __init__(self, source):
         self.data = {}
@@ -124,16 +124,16 @@ class RepositoryEnv(RepositoryBase):
 
 class RepositoryShell(RepositoryBase):
     """
-    Retrieves option keys from os.env.
+    Retrieves option keys from os.environ.
     """
     def __init__(self, source=None):
         pass
 
     def has_key(self, key):
-        return key in os.env
+        return key in os.environ
 
     def get(self, key):
-        return os.env[key]
+        return os.environ[key]
 
 
 class AutoConfig(object):
