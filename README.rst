@@ -168,6 +168,16 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     # ...
 
+Atention with *undefined* parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
+have a default value to fallback if it does not exist on the ``.env`` file.
+
+If ``SECRET_KEY`` is not present on the ``.env``, *decouple* will raise an ``UndefinedValueError``.
+
+This *fail fast* policy helps you avoid chasing misbehaviors when you eventually forget a parameter.
+
 How it works?
 -------------
 
