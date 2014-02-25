@@ -74,13 +74,13 @@ class Config(object):
 
 class RepositoryBase(object):
     def __init__(self, source):
-        raise NotImplemented
+        raise NotImplementedError
 
     def has_key(self, key):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get(self, key):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class RepositoryIni(RepositoryBase):
@@ -150,10 +150,10 @@ class AutoConfig(object):
 
     def _find_file(self, path):
         # look for all files in the current path
-        for filename in self.SUPPORTED:
-            file = os.path.join(path, filename)
-            if os.path.exists(file):
-                return file
+        for configfile in self.SUPPORTED:
+            filename = os.path.join(path, configfile)
+            if os.path.exists(filename):
+                return filename
 
         # search the parent
         parent = os.path.dirname(path)
@@ -166,15 +166,15 @@ class AutoConfig(object):
     def _load(self, path):
         # Avoid unintended permission errors
         try:
-            file = self._find_file(path)
-        except:
-            file = ''
-        Repository = self.SUPPORTED.get(os.path.basename(file))
+            filename = self._find_file(path)
+        except Exception:
+            filename = ''
+        Repository = self.SUPPORTED.get(os.path.basename(filename))
 
         if not Repository:
             Repository = RepositoryShell
 
-        self.config = Config(Repository(file))
+        self.config = Config(Repository(filename))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
