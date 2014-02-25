@@ -41,6 +41,7 @@ class Config(object):
         """
         Helper to convert config values to boolean as ConfigParser do.
         """
+        value = str(value)
         if value.lower() not in self._BOOLEANS:
             raise ValueError('Not a boolean: %s' % value)
 

@@ -65,3 +65,15 @@ def test_init_undefined(config):
 
 def test_ini_default_none(config):
     assert None is config('UndefinedKey', default=None)
+
+def test_ini_default_bool(config):
+    assert False == config('UndefinedKey', default=False, cast=bool)
+    assert True == config('UndefinedKey', default=True, cast=bool)
+
+def test_ini_default(config):
+    assert False == config('UndefinedKey', default=False)
+    assert True == config('UndefinedKey', default=True)
+
+def test_ini_default_invalid_bool(config):
+    with pytest.raises(ValueError):
+        config('UndefinedKey', default='NotBool', cast=bool)
