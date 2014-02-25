@@ -1,8 +1,9 @@
 # coding: utf-8
 import os
 import sys
-from mock import patch, mock_open
-from decouple import ConfigEnv
+from mock import patch
+import pytest
+from decouple import ConfigEnv, UndefinedValueError
 
 
 # Useful for very coarse version differentiation.
@@ -34,7 +35,8 @@ NoInterpolation=%(KeyOff)s
 def test_env_comment():
     with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
         config = ConfigEnv('.env')
-        assert '' == config('CommentedKey')
+        with pytest.raises(UndefinedValueError):
+            config('CommentedKey')
 
 def test_env_percent_not_escaped():
     with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
@@ -69,3 +71,15 @@ def test_env_os_environ():
         assert True == config('KeyTrue', cast=bool)
         assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_env_undefined():
+    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
+        config = ConfigEnv('.env')
+        with pytest.raises(UndefinedValueError):
+            config('UndefinedKey')
+
+def test_env_default_none():
+    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
+        config = ConfigEnv('.env')
+        assert None is config('UndefinedKey', default=None)

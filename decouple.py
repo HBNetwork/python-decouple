@@ -16,6 +16,18 @@ else:
     string_empty = u''
 
 
+class UndefinedValueError(Exception):
+    pass
+
+
+class Undefined(object):
+    pass
+
+
+# Reference instance to represent undefined values
+undefined = Undefined()
+
+
 class ConfigBase(object):
     """
     Base class to make the API explicit.
@@ -132,23 +144,24 @@ class ConfigEnv(ConfigBase):
 
         return self._BOOLEANS[value.lower()]
 
-    def get(self, option, default=string_empty, cast=string_type):
+    def get(self, option, default=undefined, cast=undefined):
         """
-        Return the value for option or default option is not defined.
+        Return the value for option or default if defined.
         """
-        if option not in self.data and \
-           option not in os.environ:
-            # If default was not defined return it, else make sure to cast.
-            # This is usefull for cases like dj-database-url.parse.
-            if default == string_empty:
-                return default
-            else:
-                return cast(default)
+        if option in self.data or option in os.environ:
+            value = self.data.get(option) or os.environ[option]
+        else:
+            value = default
 
-        if cast is bool:
+        if isinstance(value, Undefined):
+            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
+
+        if isinstance(cast, Undefined):
+            cast = lambda v: v  # nop
+        elif cast is bool:
             cast = self._cast_boolean
 
-        return cast(self.data.get(option) or os.environ[option])
+        return cast(value)
 
 
 class ConfigShell(ConfigEnv):
