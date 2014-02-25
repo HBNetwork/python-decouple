@@ -31,55 +31,43 @@ PercentNotEscaped=%%
 NoInterpolation=%(KeyOff)s
 '''
 
-
-def test_env_comment():
+@pytest.fixture(scope='module')
+def config():
     with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        with pytest.raises(UndefinedValueError):
-            config('CommentedKey')
+        return Config(RepositoryEnv('.env'))
 
-def test_env_percent_not_escaped():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert '%%' == config('PercentNotEscaped')
 
-def test_env_no_interpolation():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert '%(KeyOff)s' == config('NoInterpolation')
+def test_env_comment(config):
+    with pytest.raises(UndefinedValueError):
+        config('CommentedKey')
 
-def test_env_bool_true():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert True == config('KeyTrue', cast=bool)
-        assert True == config('KeyOne', cast=bool)
-        assert True == config('KeyYes', cast=bool)
-        assert True == config('KeyOn', cast=bool)
+def test_env_percent_not_escaped(config):
+    assert '%%' == config('PercentNotEscaped')
 
-def test_env_bool_false():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert False == config('KeyFalse', cast=bool)
-        assert False == config('KeyZero', cast=bool)
-        assert False == config('KeyNo', cast=bool)
-        assert False == config('KeyOff', cast=bool)
+def test_env_no_interpolation(config):
+    assert '%(KeyOff)s' == config('NoInterpolation')
 
-def test_env_os_environ():
+def test_env_bool_true(config):
+    assert True == config('KeyTrue', cast=bool)
+    assert True == config('KeyOne', cast=bool)
+    assert True == config('KeyYes', cast=bool)
+    assert True == config('KeyOn', cast=bool)
+
+def test_env_bool_false(config):
+    assert False == config('KeyFalse', cast=bool)
+    assert False == config('KeyZero', cast=bool)
+    assert False == config('KeyNo', cast=bool)
+    assert False == config('KeyOff', cast=bool)
+
+def test_env_os_environ(config):
     os.environ['KeyFallback'] = 'On'
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert True == config('KeyTrue', cast=bool)
-        assert True == config('KeyFallback', cast=bool)
+    assert True == config('KeyTrue', cast=bool)
+    assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
 
+def test_env_undefined(config):
+    with pytest.raises(UndefinedValueError):
+        config('UndefinedKey')
 
-def test_env_undefined():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        with pytest.raises(UndefinedValueError):
-            config('UndefinedKey')
-
-def test_env_default_none():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
-        config = Config(RepositoryEnv('.env'))
-        assert None is config('UndefinedKey', default=None)
+def test_env_default_none(config):
+    assert None is config('UndefinedKey', default=None)
