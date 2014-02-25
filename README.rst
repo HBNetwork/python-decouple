@@ -1,4 +1,4 @@
-Django Decouple: Strict separation of settings from code
+Python Decouple: Strict separation of settings from code
 ========================================================
 
 *Decouple* helps you to organize your settings so that you can
@@ -9,28 +9,31 @@ It also makes easy for you to:
 #. store parameters on *ini* or *.env* files;
 #. define comprehensive default values;
 #. properly convert values to the correct data type;
-#. have **only one** ``settings.py`` to rule all your instances.
+#. have **only one** configuration module to rule all your instances.
 
-.. image:: https://travis-ci.org/henriquebastos/django-decouple.png?branch=master
-    :target: https://travis-ci.org/henriquebastos/django-decouple
+It was originally designed for Django, but became an independent generic tool
+for separating settings from code.
+
+.. image:: https://travis-ci.org/henriquebastos/python-decouple.png?branch=master
+    :target: https://travis-ci.org/henriquebastos/python-decouple
     :alt: Test Status
 
-.. image:: https://landscape.io/github/henriquebastos/django-decouple/master/landscape.png
-    :target: https://landscape.io/github/henriquebastos/django-decouple/master
+.. image:: https://landscape.io/github/henriquebastos/python-decouple/master/landscape.png
+    :target: https://landscape.io/github/henriquebastos/python-decouple/master
     :alt: Code Helth
 
-.. image:: https://pypip.in/v/django-decouple/badge.png
-    :target: https://crate.io/packages/django-decouple/
+.. image:: https://pypip.in/v/python-decouple/badge.png
+    :target: https://crate.io/packages/python-decouple/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/django-decouple/badge.png
-    :target: https://crate.io/packages/django-decouple/
+.. image:: https://pypip.in/d/python-decouple/badge.png
+    :target: https://crate.io/packages/python-decouple/
     :alt: Number of PyPI downloads
 
 Why?
 ----
 
-Django's settings stores many different kinds of parameters:
+Web framework's settings stores many different kinds of parameters:
 
 * Locale and i18n;
 * Middlewares and Installed Apps;
@@ -42,8 +45,8 @@ The first 2 are *project settings* the last 3 are *instance settings*.
 
 You should be able to change *instance settings* without redeploying your app.
 
-What not just use environment variables?
-----------------------------------------
+Why not just use environment variables?
+---------------------------------------
 
 *Envvars* works, but since ``os.environ`` only returns strings, it's tricky.
 
@@ -66,7 +69,7 @@ Install
 
 .. code-block:: console
 
-    pip install django-decouple
+    pip install python-decouple
 
 Usage
 -----
@@ -96,7 +99,7 @@ Where the settings data are stored?
 Ini file
 ~~~~~~~~~
 
-Simply create a ``settings.ini`` next to your ``settings.py`` in the form:
+Simply create a ``settings.ini`` next to your configuration module in the form:
 
 .. code-block:: ini
 
@@ -122,8 +125,8 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%
 
-How do I use it?
-----------------
+Example: How do I use it with Django?
+-------------------------------------
 
 Given that I have a ``.env`` file at my repository root directory, here is a snippet of my ``settings.py``.
 
@@ -194,7 +197,7 @@ How it works?
 
     Detects which configuration repository you're using.
 
-    It recursively searches up your ``settings.py`` path looking for a
+    It recursively searches up your configuration module path looking for a
     ``settings.ini`` or a ``.env`` file.
 
 The **config** object is an instance of ``AutoConfig`` to improve
