@@ -1,7 +1,8 @@
 # coding: utf-8
 import sys
 from mock import patch, mock_open
-from decouple import ConfigIni
+import pytest
+from decouple import Config, RepositoryIni, UndefinedValueError
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -33,22 +34,23 @@ Interpolation=%(KeyOff)s
 
 def test_ini_comment():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert '' == config('CommentedKey')
+        config = Config(RepositoryIni('settings.ini'))
+        with pytest.raises(UndefinedValueError):
+            config('CommentedKey')
 
 def test_ini_percent_escape():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
+        config = Config(RepositoryIni('settings.ini'))
         assert '%' == config('PercentIsEscaped')
 
 def test_ini_interpolation():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
+        config = Config(RepositoryIni('settings.ini'))
         assert 'off' == config('Interpolation')
 
 def test_ini_bool_true():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
+        config = Config(RepositoryIni('settings.ini'))
         assert True == config('KeyTrue', cast=bool)
         assert True == config('KeyOne', cast=bool)
         assert True == config('KeyYes', cast=bool)
@@ -56,7 +58,7 @@ def test_ini_bool_true():
 
 def test_ini_bool_false():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
+        config = Config(RepositoryIni('settings.ini'))
         assert False == config('KeyFalse', cast=bool)
         assert False == config('KeyZero', cast=bool)
         assert False == config('KeyNo', cast=bool)
