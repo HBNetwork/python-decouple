@@ -141,8 +141,8 @@ class AutoConfig(object):
     Autodetects the config file and type.
     """
     SUPPORTED = {
-        'settings.ini': ConfigIni,
-        '.env': ConfigEnv,
+        'settings.ini': RepositoryIni,
+        '.env': RepositoryEnv,
     }
 
     def __init__(self):
@@ -169,12 +169,12 @@ class AutoConfig(object):
             file = self._find_file(path)
         except:
             file = ''
-        klass = self.SUPPORTED.get(os.path.basename(file))
+        Repository = self.SUPPORTED.get(os.path.basename(file))
 
-        if not klass:
-            klass = ConfigShell
+        if not Repository:
+            Repository = RepositoryShell
 
-        self.config = klass(file)
+        self.config = Config(Repository(file))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
