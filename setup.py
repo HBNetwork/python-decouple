@@ -5,7 +5,7 @@ import os
 
 README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
-setup(name='django-decouple',
+setup(name='python-decouple',
       version='2.2',
       description='Strict separation of settings from code.',
       long_description=open(README).read(),
@@ -18,6 +18,7 @@ setup(name='django-decouple',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Framework :: Django',
+          'Framework :: Flask',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
           'Natural Language :: English',
@@ -26,4 +27,4 @@ setup(name='django-decouple',
           'Programming Language :: Python :: 3',
           'Topic :: Software Development :: Libraries',
       ],
-      url='http://github.com/henriquebastos/django-decouple/',)
+      url='http://github.com/henriquebastos/python-decouple/',)
