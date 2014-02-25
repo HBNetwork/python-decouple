@@ -1,7 +1,8 @@
 # coding: utf-8
 import sys
 from mock import patch, mock_open
-from decouple import ConfigIni
+import pytest
+from decouple import Config, RepositoryIni, UndefinedValueError
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -30,34 +31,37 @@ PercentIsEscaped=%%
 Interpolation=%(KeyOff)s
 '''
 
-
-def test_ini_comment():
+@pytest.fixture(scope='module')
+def config():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert '' == config('CommentedKey')
+        return Config(RepositoryIni('settings.ini'))
 
-def test_ini_percent_escape():
-    with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert '%' == config('PercentIsEscaped')
 
-def test_ini_interpolation():
-    with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert 'off' == config('Interpolation')
+def test_ini_comment(config):
+    with pytest.raises(UndefinedValueError):
+        config('CommentedKey')
 
-def test_ini_bool_true():
-    with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert True == config('KeyTrue', cast=bool)
-        assert True == config('KeyOne', cast=bool)
-        assert True == config('KeyYes', cast=bool)
-        assert True == config('KeyOn', cast=bool)
+def test_ini_percent_escape(config):
+    assert '%' == config('PercentIsEscaped')
 
-def test_ini_bool_false():
-    with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        config = ConfigIni('settings.ini')
-        assert False == config('KeyFalse', cast=bool)
-        assert False == config('KeyZero', cast=bool)
-        assert False == config('KeyNo', cast=bool)
-        assert False == config('KeyOff', cast=bool)
+def test_ini_interpolation(config):
+    assert 'off' == config('Interpolation')
+
+def test_ini_bool_true(config):
+    assert True == config('KeyTrue', cast=bool)
+    assert True == config('KeyOne', cast=bool)
+    assert True == config('KeyYes', cast=bool)
+    assert True == config('KeyOn', cast=bool)
+
+def test_ini_bool_false(config):
+    assert False == config('KeyFalse', cast=bool)
+    assert False == config('KeyZero', cast=bool)
+    assert False == config('KeyNo', cast=bool)
+    assert False == config('KeyOff', cast=bool)
+
+def test_init_undefined(config):
+    with pytest.raises(UndefinedValueError):
+        config('UndefinedKey')
+
+def test_ini_default_none(config):
+    assert None is config('UndefinedKey', default=None)

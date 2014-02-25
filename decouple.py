@@ -8,120 +8,34 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     from configparser import ConfigParser
-    string_type = str
-    string_empty = ''
 else:
     from ConfigParser import SafeConfigParser as ConfigParser
-    string_type = unicode
-    string_empty = u''
 
 
-class ConfigBase(object):
+class UndefinedValueError(Exception):
+    pass
+
+
+class Undefined(object):
     """
-    Base class to make the API explicit.
+    Class to represent undefined type.
     """
-    def __init__(self, config_file):
-        raise NotImplemented
-
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        raise NotImplemented
-
-    def __call__(self, *args, **kwargs):
-        """
-        Convenient shortcut to get.
-        """
-        return self.get(*args, **kwargs)
+    pass
 
 
-class ConfigIni(ConfigBase):
-    """
-    Wrapper around ConfigParser to deal with Django environment settings.
-    """
-    SECTION = 'settings'
-
-    def __init__(self, config_file):
-        self.config_file = None
-        self.parser = None
-        self.load(config_file)
-
-    def load(self, config_file):
-        """
-        Load config data from a file.
-        """
-        self.config_file = config_file
-        self.parser = ConfigParser()
-        self.parser.readfp(open(config_file))
-
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        if not self.parser.has_option(self.SECTION, option):
-            return cast(default)
-
-        getter = {
-            bool: self.parser.getboolean,
-            float: self.parser.getfloat,
-            int: self.parser.getint,
-        }.get(cast, self.parser.get)
-
-        return cast(getter(self.SECTION, option))
-
-    def set(self, option, value):
-        """
-        Add a config value to configuration instance.
-        """
-        if not self.parser.has_section(self.SECTION):
-            self.parser.add_section(self.SECTION)
-
-        self.parser.set(self.SECTION, option, string_type(value))
-
-    def remove(self, option):
-        """
-        Remove an option from the config instance.
-        """
-        return self.parser.remove_option(self.SECTION, option)
-
-    def list(self):
-        """
-        Return a list of all (option, value) pairs.
-        """
-        return self.parser.items(self.SECTION)
-
-    def save(self):
-        """
-        Persist current configuration instance to the original config file.
-        """
-        with open(self.config_file, 'wb') as f:
-            self.parser.write(f)
+# Reference instance to represent undefined values
+undefined = Undefined()
 
 
-class ConfigEnv(ConfigBase):
+class Config(object):
     """
     Handle .env file format used by Foreman.
     """
     _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
                  '0': False, 'no': False, 'false': False, 'off': False}
 
-    def __init__(self, config_file):
-        self.data = self._read_dotenv(config_file)
-
-    def _read_dotenv(self, config_file):
-        """
-        Read config data from a file. Taken from jacobian's django-dotenv
-        """
-        data = {}
-        for line in open(config_file):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            v = v.strip("'").strip('"')
-            data[k] = v
-        return data
+    def __init__(self, repository):
+        self.repository = repository
 
     def _cast_boolean(self, value):
         """
@@ -132,48 +46,94 @@ class ConfigEnv(ConfigBase):
 
         return self._BOOLEANS[value.lower()]
 
-    def get(self, option, default=string_empty, cast=string_type):
+    def get(self, option, default=undefined, cast=undefined):
         """
-        Return the value for option or default option is not defined.
+        Return the value for option or default if defined.
         """
-        if option not in self.data and \
-           option not in os.environ:
-            # If default was not defined return it, else make sure to cast.
-            # This is usefull for cases like dj-database-url.parse.
-            if default == string_empty:
-                return default
-            else:
-                return cast(default)
+        if option in self.repository:
+            value = self.repository.get(option)
+        else:
+            value = default
 
-        if cast is bool:
+        if isinstance(value, Undefined):
+            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
+
+        if isinstance(cast, Undefined):
+            cast = lambda v: v  # nop
+        elif cast is bool:
             cast = self._cast_boolean
 
-        return cast(self.data.get(option) or os.environ[option])
+        return cast(value)
+
+    def __call__(self, *args, **kwargs):
+        """
+        Convenient shortcut to get.
+        """
+        return self.get(*args, **kwargs)
 
 
-class ConfigShell(ConfigEnv):
+class RepositoryBase(object):
+    def __init__(self, source):
+        raise NotImplementedError
+
+    def __contains__(self, key):
+        raise NotImplementedError
+
+    def get(self, key):
+        raise NotImplementedError
+
+
+class RepositoryIni(RepositoryBase):
     """
-    Fallback class that only look on os.envirion.
+    Retrieves option keys from .ini files.
     """
-    def __init__(self, config_file=None):
+    SECTION = 'settings'
+
+    def __init__(self, source):
+        self.parser = ConfigParser()
+        self.parser.readfp(open(source))
+
+    def __contains__(self, key):
+        return self.parser.has_option(self.SECTION, key)
+
+    def get(self, key):
+        return self.parser.get(self.SECTION, key)
+
+
+class RepositoryEnv(RepositoryBase):
+    """
+    Retrieves option keys from .env files with fall back to os.environ.
+    """
+    def __init__(self, source):
+        self.data = {}
+
+        for line in open(source):
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            v = v.strip("'").strip('"')
+            self.data[k] = v
+
+    def __contains__(self, key):
+        return key in self.data or key in os.environ
+
+    def get(self, key):
+        return self.data.get(key) or os.environ[key]
+
+
+class RepositoryShell(RepositoryBase):
+    """
+    Retrieves option keys from os.environ.
+    """
+    def __init__(self, source=None):
         pass
 
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        if option not in os.environ:
-            # If default was not defined return it, else make sure to cast.
-            # This is usefull for cases like dj-database-url.parse.
-            if default == string_empty:
-                return default
-            else:
-                return cast(default)
+    def __contains__(self, key):
+        return key in os.environ
 
-        if cast is bool:
-            cast = self._cast_boolean
-
-        return cast(os.environ[option])
+    def get(self, key):
+        return os.environ[key]
 
 
 class AutoConfig(object):
@@ -181,8 +141,8 @@ class AutoConfig(object):
     Autodetects the config file and type.
     """
     SUPPORTED = {
-        'settings.ini': ConfigIni,
-        '.env': ConfigEnv,
+        'settings.ini': RepositoryIni,
+        '.env': RepositoryEnv,
     }
 
     def __init__(self):
@@ -190,10 +150,10 @@ class AutoConfig(object):
 
     def _find_file(self, path):
         # look for all files in the current path
-        for filename in self.SUPPORTED:
-            file = os.path.join(path, filename)
-            if os.path.exists(file):
-                return file
+        for configfile in self.SUPPORTED:
+            filename = os.path.join(path, configfile)
+            if os.path.exists(filename):
+                return filename
 
         # search the parent
         parent = os.path.dirname(path)
@@ -204,16 +164,17 @@ class AutoConfig(object):
         return ''
 
     def _load(self, path):
+        # Avoid unintended permission errors
         try:
-            file = self._find_file(path)
-        except:
-            file = ''
-        klass = self.SUPPORTED.get(os.path.basename(file))
+            filename = self._find_file(path)
+        except Exception:
+            filename = ''
+        Repository = self.SUPPORTED.get(os.path.basename(filename))
 
-        if not klass:
-            klass = ConfigShell
+        if not Repository:
+            Repository = RepositoryShell
 
-        self.config = klass(file)
+        self.config = Config(Repository(filename))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
