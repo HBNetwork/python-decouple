@@ -17,6 +17,9 @@ class UndefinedValueError(Exception):
 
 
 class Undefined(object):
+    """
+    Class to represent undefined type.
+    """
     pass
 
 
@@ -277,6 +280,7 @@ class AutoConfig(object):
         return ''
 
     def _load(self, path):
+        # Avoid unintended permission errors
         try:
             file = self._find_file(path)
         except:
