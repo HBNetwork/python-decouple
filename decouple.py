@@ -164,6 +164,70 @@ class ConfigEnv(ConfigBase):
         return cast(value)
 
 
+class RepositoryBase(object):
+    def __init__(self, source):
+        raise NotImplemented
+
+    def has_key(self, key):
+        raise NotImplemented
+
+    def get(self, key):
+        raise NotImplemented
+
+
+class RepositoryIni(RepositoryBase):
+    """
+    Retrieves option keys from .ini files.
+    """
+    SECTION = 'settings'
+
+    def __init__(self, source):
+        self.parser = ConfigParser()
+        self.parser.readfp(open(source))
+
+    def has_key(self, key):
+        return self.parser.has_option(self.SECTION, key)
+
+    def get(self, key):
+        return self.parser.get(self.SECTION, key)
+
+
+class RepositoryEnv(RepositoryBase):
+    """
+    Retrieves option keys from .env files with fall back to os.env.
+    """
+    def __init__(self, source):
+        self.data = {}
+
+        for line in open(source):
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            v = v.strip("'").strip('"')
+            self.data[k] = v
+
+    def has_key(self, key):
+        return key in self.data or key in os.environ
+
+    def get(self, key):
+        return self.data[key] or os.environ[key]
+
+
+class RepositoryShell(RepositoryBase):
+    """
+    Retrieves option keys from os.env.
+    """
+    def __init__(self, source=None):
+        pass
+
+    def has_key(self, key):
+        return key in os.env
+
+    def get(self, key):
+        return os.env[key]
+
+
 class ConfigShell(ConfigEnv):
     """
     Fallback class that only look on os.envirion.
