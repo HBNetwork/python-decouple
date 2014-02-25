@@ -8,12 +8,8 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     from configparser import ConfigParser
-    string_type = str
-    string_empty = ''
 else:
     from ConfigParser import SafeConfigParser as ConfigParser
-    string_type = unicode
-    string_empty = u''
 
 
 class UndefinedValueError(Exception):
