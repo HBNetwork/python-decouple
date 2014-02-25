@@ -27,112 +27,15 @@ class Undefined(object):
 undefined = Undefined()
 
 
-class ConfigBase(object):
-    """
-    Base class to make the API explicit.
-    """
-    def __init__(self, config_file):
-        raise NotImplemented
-
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        raise NotImplemented
-
-    def __call__(self, *args, **kwargs):
-        """
-        Convenient shortcut to get.
-        """
-        return self.get(*args, **kwargs)
-
-
-class ConfigIni(ConfigBase):
-    """
-    Wrapper around ConfigParser to deal with Django environment settings.
-    """
-    SECTION = 'settings'
-
-    def __init__(self, config_file):
-        self.config_file = None
-        self.parser = None
-        self.load(config_file)
-
-    def load(self, config_file):
-        """
-        Load config data from a file.
-        """
-        self.config_file = config_file
-        self.parser = ConfigParser()
-        self.parser.readfp(open(config_file))
-
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        if not self.parser.has_option(self.SECTION, option):
-            return cast(default)
-
-        getter = {
-            bool: self.parser.getboolean,
-            float: self.parser.getfloat,
-            int: self.parser.getint,
-        }.get(cast, self.parser.get)
-
-        return cast(getter(self.SECTION, option))
-
-    def set(self, option, value):
-        """
-        Add a config value to configuration instance.
-        """
-        if not self.parser.has_section(self.SECTION):
-            self.parser.add_section(self.SECTION)
-
-        self.parser.set(self.SECTION, option, string_type(value))
-
-    def remove(self, option):
-        """
-        Remove an option from the config instance.
-        """
-        return self.parser.remove_option(self.SECTION, option)
-
-    def list(self):
-        """
-        Return a list of all (option, value) pairs.
-        """
-        return self.parser.items(self.SECTION)
-
-    def save(self):
-        """
-        Persist current configuration instance to the original config file.
-        """
-        with open(self.config_file, 'wb') as f:
-            self.parser.write(f)
-
-
-class ConfigEnv(ConfigBase):
+class Config(object):
     """
     Handle .env file format used by Foreman.
     """
     _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
                  '0': False, 'no': False, 'false': False, 'off': False}
 
-    def __init__(self, config_file):
-        self.data = self._read_dotenv(config_file)
-
-    def _read_dotenv(self, config_file):
-        """
-        Read config data from a file. Taken from jacobian's django-dotenv
-        """
-        data = {}
-        for line in open(config_file):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            v = v.strip("'").strip('"')
-            data[k] = v
-        return data
+    def __init__(self, repository):
+        self.repository = repository
 
     def _cast_boolean(self, value):
         """
@@ -147,8 +50,8 @@ class ConfigEnv(ConfigBase):
         """
         Return the value for option or default if defined.
         """
-        if option in self.data or option in os.environ:
-            value = self.data.get(option) or os.environ[option]
+        if self.repository.has_key(option):
+            value = self.repository.get(option)
         else:
             value = default
 
@@ -161,6 +64,12 @@ class ConfigEnv(ConfigBase):
             cast = self._cast_boolean
 
         return cast(value)
+
+    def __call__(self, *args, **kwargs):
+        """
+        Convenient shortcut to get.
+        """
+        return self.get(*args, **kwargs)
 
 
 class RepositoryBase(object):
@@ -225,31 +134,6 @@ class RepositoryShell(RepositoryBase):
 
     def get(self, key):
         return os.env[key]
-
-
-class ConfigShell(ConfigEnv):
-    """
-    Fallback class that only look on os.envirion.
-    """
-    def __init__(self, config_file=None):
-        pass
-
-    def get(self, option, default=string_empty, cast=string_type):
-        """
-        Return the value for option or default option is not defined.
-        """
-        if option not in os.environ:
-            # If default was not defined return it, else make sure to cast.
-            # This is usefull for cases like dj-database-url.parse.
-            if default == string_empty:
-                return default
-            else:
-                return cast(default)
-
-        if cast is bool:
-            cast = self._cast_boolean
-
-        return cast(os.environ[option])
 
 
 class AutoConfig(object):
