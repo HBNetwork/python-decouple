@@ -27,6 +27,32 @@ class Undefined(object):
 undefined = Undefined()
 
 
+class Cast(object):
+    """
+    Class with custom casts
+    """
+
+    _BOOLEANS = {
+        '1': True, 'yes': True, 'true': True, 'on': True,
+        '0': False, 'no': False, 'false': False, 'off': False
+    }
+
+    @classmethod
+    def boolean(self, value):
+        """
+        Helper to convert config values to boolean as ConfigParser do.
+        """
+        value = str(value)
+        if value.lower() not in self._BOOLEANS:
+            raise ValueError('Not a boolean: %s' % value)
+
+        return self._BOOLEANS[value.lower()]
+
+    @classmethod
+    def csv(self, value):
+        return value.split(',')
+
+
 class Config(object):
 
     """
@@ -40,24 +66,14 @@ class Config(object):
     def __init__(self, repository):
         self.repository = repository
 
-    def _cast_boolean(self, value):
-        """
-        Helper to convert config values to boolean as ConfigParser do.
-        """
-        value = str(value)
-        if value.lower() not in self._BOOLEANS:
-            raise ValueError('Not a boolean: %s' % value)
-
-        return self._BOOLEANS[value.lower()]
-
     def get(self, option, default=undefined, cast=undefined):
         """
         Return the value for option or default if defined.
         """
+
+        value = default
         if option in self.repository:
             value = self.repository.get(option)
-        else:
-            value = default
 
         if isinstance(value, Undefined):
             raise UndefinedValueError(
@@ -69,7 +85,7 @@ class Config(object):
         if isinstance(cast, Undefined):
             cast = lambda v: v  # nop
         elif cast is bool:
-            cast = self._cast_boolean
+            cast = Cast.boolean
 
         return cast(value)
 

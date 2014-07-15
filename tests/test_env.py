@@ -3,7 +3,7 @@ import os
 import sys
 from mock import patch
 import pytest
-from decouple import Config, RepositoryEnv, UndefinedValueError
+from decouple import Config, RepositoryEnv, UndefinedValueError, Cast
 
 
 # Useful for very coarse version differentiation.
@@ -25,6 +25,8 @@ KeyFalse=False
 KeyZero=0
 KeyNo=no
 KeyOff=off
+
+CSV=one,two
 
 #CommentedKey=None
 PercentNotEscaped=%%
@@ -79,3 +81,7 @@ def test_env_undefined(config):
 
 def test_env_default_none(config):
     assert None is config('UndefinedKey', default=None)
+
+
+def test_env_cast_csv(config):
+    assert ['one', 'two'] == config('CSV', cast=Cast.csv)

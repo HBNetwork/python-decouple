@@ -2,7 +2,7 @@
 import sys
 from mock import patch, mock_open
 import pytest
-from decouple import Config, RepositoryIni, UndefinedValueError
+from decouple import Config, RepositoryIni, UndefinedValueError, Cast
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -24,6 +24,8 @@ KeyFalse=False
 KeyZero=0
 KeyNo=no
 KeyOff=off
+
+CSV=one,two
 
 #CommentedKey=None
 PercentIsEscaped=%%
@@ -86,3 +88,7 @@ def test_ini_default(config):
 def test_ini_default_invalid_bool(config):
     with pytest.raises(ValueError):
         config('UndefinedKey', default='NotBool', cast=bool)
+
+
+def test_ini_cast_csv(config):
+    assert ['one', 'two'] == config('CSV', cast=Cast.csv)
