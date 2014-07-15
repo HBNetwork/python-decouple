@@ -58,10 +58,6 @@ class Config(object):
     """
     Handle .env file format used by Foreman.
     """
-    _BOOLEANS = {
-        '1': True, 'yes': True, 'true': True, 'on': True,
-        '0': False, 'no': False, 'false': False, 'off': False
-    }
 
     def __init__(self, repository):
         self.repository = repository
