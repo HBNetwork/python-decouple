@@ -1,7 +1,7 @@
 # coding: utf-8
 import os
 import sys
-
+import inspect
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -28,11 +28,14 @@ undefined = Undefined()
 
 
 class Config(object):
+
     """
     Handle .env file format used by Foreman.
     """
-    _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
-                 '0': False, 'no': False, 'false': False, 'off': False}
+    _BOOLEANS = {
+        '1': True, 'yes': True, 'true': True, 'on': True,
+        '0': False, 'no': False, 'false': False, 'off': False
+    }
 
     def __init__(self, repository):
         self.repository = repository
@@ -57,7 +60,11 @@ class Config(object):
             value = default
 
         if isinstance(value, Undefined):
-            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
+            raise UndefinedValueError(
+                "{} option not found and default value wasn't defined.".format(
+                    option
+                )
+            )
 
         if isinstance(cast, Undefined):
             cast = lambda v: v  # nop
@@ -74,6 +81,7 @@ class Config(object):
 
 
 class RepositoryBase(object):
+
     def __init__(self, source):
         raise NotImplementedError
 
@@ -85,6 +93,7 @@ class RepositoryBase(object):
 
 
 class RepositoryIni(RepositoryBase):
+
     """
     Retrieves option keys from .ini files.
     """
@@ -102,9 +111,11 @@ class RepositoryIni(RepositoryBase):
 
 
 class RepositoryEnv(RepositoryBase):
+
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
+
     def __init__(self, source):
         self.data = {}
 
@@ -124,9 +135,11 @@ class RepositoryEnv(RepositoryBase):
 
 
 class RepositoryShell(RepositoryBase):
+
     """
     Retrieves option keys from os.environ.
     """
+
     def __init__(self, source=None):
         pass
 
@@ -138,6 +151,7 @@ class RepositoryShell(RepositoryBase):
 
 
 class AutoConfig(object):
+
     """
     Autodetects the config file and type.
     """
@@ -179,7 +193,7 @@ class AutoConfig(object):
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
-        frame = sys._getframe()
+        frame = inspect.currentframe()
         path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
         return path
 
