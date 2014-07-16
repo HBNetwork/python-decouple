@@ -2,7 +2,7 @@
 import sys
 from mock import patch, mock_open
 import pytest
-from decouple import Config, RepositoryIni, UndefinedValueError
+from decouple import Config, RepositoryIni, UndefinedValueError, Cast
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -11,7 +11,6 @@ if PY3:
     from io import StringIO
 else:
     from StringIO import StringIO
-
 
 
 INIFILE = '''
@@ -26,10 +25,14 @@ KeyZero=0
 KeyNo=no
 KeyOff=off
 
+CSV=one,two
+CSV_INT=1,2
+
 #CommentedKey=None
 PercentIsEscaped=%%
 Interpolation=%(KeyOff)s
 '''
+
 
 @pytest.fixture(scope='module')
 def config():
@@ -41,11 +44,14 @@ def test_ini_comment(config):
     with pytest.raises(UndefinedValueError):
         config('CommentedKey')
 
+
 def test_ini_percent_escape(config):
     assert '%' == config('PercentIsEscaped')
 
+
 def test_ini_interpolation(config):
     assert 'off' == config('Interpolation')
+
 
 def test_ini_bool_true(config):
     assert True == config('KeyTrue', cast=bool)
@@ -53,27 +59,41 @@ def test_ini_bool_true(config):
     assert True == config('KeyYes', cast=bool)
     assert True == config('KeyOn', cast=bool)
 
+
 def test_ini_bool_false(config):
     assert False == config('KeyFalse', cast=bool)
     assert False == config('KeyZero', cast=bool)
     assert False == config('KeyNo', cast=bool)
     assert False == config('KeyOff', cast=bool)
 
+
 def test_init_undefined(config):
     with pytest.raises(UndefinedValueError):
         config('UndefinedKey')
 
+
 def test_ini_default_none(config):
     assert None is config('UndefinedKey', default=None)
+
 
 def test_ini_default_bool(config):
     assert False == config('UndefinedKey', default=False, cast=bool)
     assert True == config('UndefinedKey', default=True, cast=bool)
 
+
 def test_ini_default(config):
     assert False == config('UndefinedKey', default=False)
     assert True == config('UndefinedKey', default=True)
 
+
 def test_ini_default_invalid_bool(config):
     with pytest.raises(ValueError):
         config('UndefinedKey', default='NotBool', cast=bool)
+
+
+def test_ini_cast_csv(config):
+    assert ['one', 'two'] == config('CSV', cast=Cast().csv)
+
+
+def test_ini_cast_csv_int(config):
+    assert [1, 2] == config('CSV_INT', cast=Cast(int).csv)

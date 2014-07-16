@@ -1,7 +1,7 @@
 # coding: utf-8
 import os
 import sys
-
+import inspect
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -27,17 +27,23 @@ class Undefined(object):
 undefined = Undefined()
 
 
-class Config(object):
+class Cast(object):
     """
-    Handle .env file format used by Foreman.
+    Class with custom casts
     """
-    _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
-                 '0': False, 'no': False, 'false': False, 'off': False}
 
-    def __init__(self, repository):
-        self.repository = repository
+    _BOOLEANS = {
+        '1': True, 'yes': True, 'true': True, 'on': True,
+        '0': False, 'no': False, 'false': False, 'off': False
+    }
 
-    def _cast_boolean(self, value):
+    cast = None
+
+    def __init__(self, cast=None):
+        if cast:
+            self.cast = cast
+
+    def boolean(self, value):
         """
         Helper to convert config values to boolean as ConfigParser do.
         """
@@ -47,22 +53,44 @@ class Config(object):
 
         return self._BOOLEANS[value.lower()]
 
+    def csv(self, value):
+        values = value.split(',')
+
+        if self.cast:
+            return [self.cast(v) for v in values]
+
+        return values
+
+
+class Config(object):
+
+    """
+    Handle .env file format used by Foreman.
+    """
+
+    def __init__(self, repository):
+        self.repository = repository
+
     def get(self, option, default=undefined, cast=undefined):
         """
         Return the value for option or default if defined.
         """
+
+        value = default
         if option in self.repository:
             value = self.repository.get(option)
-        else:
-            value = default
 
         if isinstance(value, Undefined):
-            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
+            raise UndefinedValueError(
+                "{} option not found and default value wasn't defined.".format(
+                    option
+                )
+            )
 
         if isinstance(cast, Undefined):
             cast = lambda v: v  # nop
         elif cast is bool:
-            cast = self._cast_boolean
+            cast = Cast().boolean
 
         return cast(value)
 
@@ -74,6 +102,7 @@ class Config(object):
 
 
 class RepositoryBase(object):
+
     def __init__(self, source):
         raise NotImplementedError
 
@@ -85,6 +114,7 @@ class RepositoryBase(object):
 
 
 class RepositoryIni(RepositoryBase):
+
     """
     Retrieves option keys from .ini files.
     """
@@ -102,9 +132,11 @@ class RepositoryIni(RepositoryBase):
 
 
 class RepositoryEnv(RepositoryBase):
+
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
+
     def __init__(self, source):
         self.data = {}
 
@@ -124,9 +156,11 @@ class RepositoryEnv(RepositoryBase):
 
 
 class RepositoryShell(RepositoryBase):
+
     """
     Retrieves option keys from os.environ.
     """
+
     def __init__(self, source=None):
         pass
 
@@ -138,6 +172,7 @@ class RepositoryShell(RepositoryBase):
 
 
 class AutoConfig(object):
+
     """
     Autodetects the config file and type.
     """
@@ -179,7 +214,7 @@ class AutoConfig(object):
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
-        frame = sys._getframe()
+        frame = inspect.currentframe()
         path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
         return path
 
