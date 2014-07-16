@@ -27,6 +27,7 @@ KeyNo=no
 KeyOff=off
 
 CSV=one,two
+CSV_INT=1,2
 
 #CommentedKey=None
 PercentNotEscaped=%%
@@ -84,4 +85,8 @@ def test_env_default_none(config):
 
 
 def test_env_cast_csv(config):
-    assert ['one', 'two'] == config('CSV', cast=Cast.csv)
+    assert ['one', 'two'] == config('CSV', cast=Cast().csv)
+
+
+def test_env_cast_csv_int(config):
+    assert [1, 2] == config('CSV_INT', cast=Cast(int).csv)

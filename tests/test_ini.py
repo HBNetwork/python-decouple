@@ -26,6 +26,7 @@ KeyNo=no
 KeyOff=off
 
 CSV=one,two
+CSV_INT=1,2
 
 #CommentedKey=None
 PercentIsEscaped=%%
@@ -91,4 +92,8 @@ def test_ini_default_invalid_bool(config):
 
 
 def test_ini_cast_csv(config):
-    assert ['one', 'two'] == config('CSV', cast=Cast.csv)
+    assert ['one', 'two'] == config('CSV', cast=Cast().csv)
+
+
+def test_ini_cast_csv_int(config):
+    assert [1, 2] == config('CSV_INT', cast=Cast(int).csv)

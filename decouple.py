@@ -37,7 +37,12 @@ class Cast(object):
         '0': False, 'no': False, 'false': False, 'off': False
     }
 
-    @classmethod
+    cast = None
+
+    def __init__(self, cast=None):
+        if cast:
+            self.cast = cast
+
     def boolean(self, value):
         """
         Helper to convert config values to boolean as ConfigParser do.
@@ -48,9 +53,13 @@ class Cast(object):
 
         return self._BOOLEANS[value.lower()]
 
-    @classmethod
     def csv(self, value):
-        return value.split(',')
+        values = value.split(',')
+
+        if self.cast:
+            return [self.cast(v) for v in values]
+
+        return values
 
 
 class Config(object):
@@ -81,7 +90,7 @@ class Config(object):
         if isinstance(cast, Undefined):
             cast = lambda v: v  # nop
         elif cast is bool:
-            cast = Cast.boolean
+            cast = Cast().boolean
 
         return cast(value)
 
