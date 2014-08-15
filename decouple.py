@@ -120,7 +120,10 @@ class RepositoryEnv(RepositoryBase):
         return key in self.data or key in os.environ
 
     def get(self, key):
-        return self.data.get(key) or os.environ[key]
+        try:
+            return self.data[key]
+        except KeyError:
+            return os.environ[key]
 
 
 class RepositoryShell(RepositoryBase):

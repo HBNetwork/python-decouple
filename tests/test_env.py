@@ -25,6 +25,7 @@ KeyFalse=False
 KeyZero=0
 KeyNo=no
 KeyOff=off
+KeyEmpty=
 
 #CommentedKey=None
 PercentNotEscaped=%%
@@ -71,3 +72,6 @@ def test_env_undefined(config):
 
 def test_env_default_none(config):
     assert None is config('UndefinedKey', default=None)
+
+def test_env_empty(config):
+    assert '' is config('KeyEmpty', default=None)
