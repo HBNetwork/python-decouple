@@ -30,6 +30,9 @@ KeyEmpty=
 #CommentedKey=None
 PercentNotEscaped=%%
 NoInterpolation=%(KeyOff)s
+IgnoreSpace = text
+RespectSingleQuoteSpace = ' text'
+RespectDoubleQuoteSpace = " text"
 '''
 
 @pytest.fixture(scope='module')
@@ -75,3 +78,8 @@ def test_env_default_none(config):
 
 def test_env_empty(config):
     assert '' is config('KeyEmpty', default=None)
+
+def test_env_support_space(config):
+    assert 'text' == config('IgnoreSpace')
+    assert ' text' == config('RespectSingleQuoteSpace')
+    assert ' text' == config('RespectDoubleQuoteSpace')

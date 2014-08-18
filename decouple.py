@@ -113,7 +113,8 @@ class RepositoryEnv(RepositoryBase):
             if not line or line.startswith('#') or '=' not in line:
                 continue
             k, v = line.split('=', 1)
-            v = v.strip("'").strip('"')
+            k = k.strip()
+            v = v.strip().strip('\'"')
             self.data[k] = v
 
     def __contains__(self, key):
