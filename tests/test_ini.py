@@ -25,6 +25,7 @@ KeyFalse=False
 KeyZero=0
 KeyNo=no
 KeyOff=off
+KeyEmpty=
 
 #CommentedKey=None
 PercentIsEscaped=%%
@@ -77,3 +78,6 @@ def test_ini_default(config):
 def test_ini_default_invalid_bool(config):
     with pytest.raises(ValueError):
         config('UndefinedKey', default='NotBool', cast=bool)
+
+def test_ini_empty(config):
+    assert '' is config('KeyEmpty', default=None)
