@@ -255,7 +255,7 @@ To address the complexity of the last example, *Decouple* comes with an extensib
 
 Let's improve the last example:
 
-.. code-block::
+.. code-block:: pycon
 
     >>> os.environ['ALLOWED_HOSTS'] = '.localhost, .herokuapp.com'
     >>> config('ALLOWED_HOSTS', cast=Csv())
@@ -263,7 +263,7 @@ Let's improve the last example:
 
 You can also parametrize the *Csv Helper* to return other types of data.
 
-.. code-block::
+.. code-block:: pycon
 
     >>> os.environ['LIST_OF_INTEGERS'] = '1,2,3,4,5'
     >>> config('ALLOWED_HOSTS', cast=Csv(int))
