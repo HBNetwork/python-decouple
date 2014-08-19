@@ -179,7 +179,7 @@ If ``SECRET_KEY`` is not present on the ``.env``, *decouple* will raise an ``Und
 This *fail fast* policy helps you avoid chasing misbehaviors when you eventually forget a parameter.
 
 How it works?
--------------
+=============
 
 *Decouple* is made of 5 classes:
 
@@ -212,6 +212,68 @@ How it works?
 
 The **config** object is an instance of ``AutoConfig`` to improve
 *decouple*'s usage.
+
+Understanding the CAST argument
+-------------------------------
+
+By default, all values returned by `decouple` are `strings`.
+
+This happens because they are read from `text files` or the `envvars`.
+
+However, your Python code may expect some other value type, for example:
+
+* Django's DEBUG expects a boolean True or False.
+* Django's EMAIL_PORT expects an integer.
+* Django's ALLOWED_HOSTS expects a list of hostnames.
+
+To meet this need, the `config` function accepts a `cast` argument which
+receives any *callable*, that will be used to *transform* the string value
+into something else.
+
+Let's see some examples for the above mentioned cases:
+
+.. code-block::
+
+    >>> os.environ['DEBUG'] = 'False'
+    >>> config('DEBUG', cast=bool)
+    False
+
+    >>> os.environ['EMAIL_PORT'] = '42'
+    >>> config('EMAIL_PORT', cast=int)
+    42
+
+    >>> os.environ['ALLOWED_HOSTS'] = '.localhost, .herokuapp.com'
+    >>> config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+    ['.localhost,', '.herokuapp.com']
+
+As you can see, `cast` is very flexible. But the last example got a bit complex.
+
+Built in Csv Helper
+-------------------
+
+To address the complexity of the last example, *Decouple* comes with an extensible *Csv helper*.
+
+Let's improve the last example:
+
+.. code-block::
+
+    >>> os.environ['ALLOWED_HOSTS'] = '.localhost, .herokuapp.com'
+    >>> config('ALLOWED_HOSTS', cast=Csv())
+    ['.localhost,', '.herokuapp.com']
+
+You can also parametrize the *Csv Helper* to return other types of data.
+
+.. code-block::
+
+    >>> os.environ['LIST_OF_INTEGERS'] = '1,2,3,4,5'
+    >>> config('ALLOWED_HOSTS', cast=Csv(int))
+    [1, 2, 3, 4, 5]
+
+    >>> os.environ['COMPLEX_STRING'] = '%virtual_env%\t *important stuff*\t   trailing spaces   '
+    >>> csv = Csv(cast=lambda s: s.upper(), delimiter='\t', strip=' %*')
+    >>> csv('%virtual_env%\t *important stuff*\t   trailing spaces   ')
+    ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES']
+    """
 
 License
 =======
