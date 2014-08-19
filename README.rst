@@ -232,7 +232,7 @@ into something else.
 
 Let's see some examples for the above mentioned cases:
 
-.. code-block::
+.. code-block:: pycon
 
     >>> os.environ['DEBUG'] = 'False'
     >>> config('DEBUG', cast=bool)
