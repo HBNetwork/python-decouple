@@ -26,8 +26,10 @@ KeyZero=0
 KeyNo=no
 KeyOff=off
 KeyEmpty=
+KeyEmptyWithComments=  # no comments
 
 #CommentedKey=None
+InvalidKey#Skipped
 InlineComments=Foo  # This is an inline comment
 HashContent=Foo 'Bar # Baz' %(key)s  # This is an inline comment
 PercentNotEscaped=%%
@@ -78,8 +80,15 @@ def test_env_default_none(config):
 def test_env_empty(config):
     assert '' is config('KeyEmpty', default=None)
 
+def test_env_empty_with_comments(config):
+    assert '' is config('KeyEmptyWithComments', default=None)
+
 def test_env_inline_comment(config):
     assert 'Foo' == config("InlineComments")
 
 def test_env_inline_comment_with_hash_in_value(config):
     assert "Foo 'Bar # Baz' %(key)s" == config("HashContent")
+
+def test_env_undefined_for_invalid_key(config):
+    with pytest.raises(UndefinedValueError):
+        config('InvalidKey')
