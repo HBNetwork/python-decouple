@@ -34,6 +34,9 @@ InlineComments=Foo  # This is an inline comment
 HashContent=Foo 'Bar # Baz' %(key)s  # This is an inline comment
 PercentNotEscaped=%%
 NoInterpolation=%(KeyOff)s
+IgnoreSpace = text
+RespectSingleQuoteSpace = ' text'
+RespectDoubleQuoteSpace = " text"
 '''
 
 @pytest.fixture(scope='module')
@@ -87,8 +90,13 @@ def test_env_inline_comment(config):
     assert 'Foo' == config("InlineComments")
 
 def test_env_inline_comment_with_hash_in_value(config):
-    assert "Foo 'Bar # Baz' %(key)s" == config("HashContent")
+    assert "Foo Bar # Baz %(key)s" == config("HashContent")
 
 def test_env_undefined_for_invalid_key(config):
     with pytest.raises(UndefinedValueError):
         config('InvalidKey')
+
+def test_env_support_space(config):
+    assert 'text' == config('IgnoreSpace')
+    assert ' text' == config('RespectSingleQuoteSpace')
+    assert ' text' == config('RespectDoubleQuoteSpace')

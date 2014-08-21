@@ -25,10 +25,12 @@ KeyFalse=False
 KeyZero=0
 KeyNo=no
 KeyOff=off
+KeyEmpty=
 
 #CommentedKey=None
 PercentIsEscaped=%%
 Interpolation=%(KeyOff)s
+IgnoreSpace = text
 '''
 
 @pytest.fixture(scope='module')
@@ -77,3 +79,9 @@ def test_ini_default(config):
 def test_ini_default_invalid_bool(config):
     with pytest.raises(ValueError):
         config('UndefinedKey', default='NotBool', cast=bool)
+
+def test_ini_empty(config):
+    assert '' is config('KeyEmpty', default=None)
+
+def test_ini_support_space(config):
+    assert 'text' == config('IgnoreSpace')

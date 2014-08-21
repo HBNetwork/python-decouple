@@ -1,7 +1,8 @@
 # coding: utf-8
 import os
 import sys
-import shlex
+import string
+from shlex import shlex
 
 
 # Useful for very coarse version differentiation.
@@ -9,8 +10,10 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     from configparser import ConfigParser
+    text_type = str
 else:
     from ConfigParser import SafeConfigParser as ConfigParser
+    text_type = unicode
 
 
 class UndefinedValueError(Exception):
@@ -117,7 +120,7 @@ class RepositoryEnv(RepositoryBase):
             self.data[line[0]] = line[1]
 
     def _parse_line(self, line):
-        parser = shlex.shlex(line)
+        parser = shlex(line)
         parser.wordchars += "%()"
 
         parsed_line = list(parser)
@@ -126,7 +129,7 @@ class RepositoryEnv(RepositoryBase):
             return ()
 
         key = parsed_line[0]
-        value = " ".join(parsed_line[2:])
+        value = " ".join(part.strip("\"'") for part in parsed_line[2:])
         return key, value
 
     def __contains__(self, key):
@@ -209,3 +212,33 @@ class AutoConfig(object):
 # A pré-instantiated AutoConfig to improve decouple's usability
 # now just import config and start using with no configuration.
 config = AutoConfig()
+
+
+# Helpers
+
+class Csv(object):
+    """
+    Produces a csv parser that return a list of transformed elements.
+    """
+
+    def __init__(self, cast=text_type, delimiter=',', strip=string.whitespace):
+        """
+        Parameters:
+        cast -- callable that transforms the item just before it's added to the list.
+        delimiter -- string of delimiters chars passed to shlex.
+        strip -- string of non-relevant characters to be passed to str.strip after the split.
+        """
+        self.cast = cast
+        self.delimiter = delimiter
+        self.strip = strip
+
+    def __call__(self, value):
+        """The actual transformation"""
+        transform = lambda s: self.cast(s.strip(self.strip))
+
+        splitter = shlex(value, posix=True)
+        splitter.whitespace = self.delimiter
+        splitter.whitespace_split = True
+
+        return [transform(s) for s in splitter]
+
