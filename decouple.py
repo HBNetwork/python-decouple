@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import sys
+import shlex
 
 
 # Useful for very coarse version differentiation.
@@ -109,12 +110,24 @@ class RepositoryEnv(RepositoryBase):
         self.data = {}
 
         for line in open(source):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
+            line = self._parse_line(line)
+            if len(line) != 2:
                 continue
-            k, v = line.split('=', 1)
-            v = v.strip("'").strip('"')
-            self.data[k] = v
+
+            self.data[line[0]] = line[1]
+
+    def _parse_line(self, line):
+        parser = shlex.shlex(line)
+        parser.wordchars += "%()"
+
+        parsed_line = list(parser)
+
+        if len(parsed_line) < 2 or parsed_line[1] != "=":
+            return ()
+
+        key = parsed_line[0]
+        value = " ".join(parsed_line[2:])
+        return key, value
 
     def __contains__(self, key):
         return key in self.data or key in os.environ
