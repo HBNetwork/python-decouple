@@ -168,7 +168,7 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     # ...
 
-Atention with *undefined* parameters
+Attention with *undefined* parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
