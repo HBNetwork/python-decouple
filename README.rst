@@ -97,7 +97,7 @@ Where the settings data are stored?
 *Decouple* supports both *.ini* and *.env* files.
 
 Ini file
-~~~~~~~~~
+~~~~~~~~
 
 Simply create a ``settings.ini`` next to your configuration module in the form:
 
@@ -114,7 +114,7 @@ Simply create a ``settings.ini`` next to your configuration module in the form:
 *Note*: Since ``ConfigParser`` supports *string interpolation*, to represent the character ``%`` you need to escape it as ``%%``.
 
 Env file
-~~~~~~~~~
+~~~~~~~~
 
 Simply create a ``.env`` text file on your repository's root directory in the form:
 
@@ -171,7 +171,7 @@ and `dj-datatabase-url <https://pypi.python.org/pypi/dj-database-url/>`_.
     # ...
 
 Attention with *undefined* parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
 have a default value to fallback if it does not exist on the ``.env`` file.
