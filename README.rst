@@ -109,6 +109,7 @@ Simply create a ``settings.ini`` next to your configuration module in the form:
     SECRET_KEY=ARANDOMSECRETKEY
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%%
+    #COMMENTED=42
 
 *Note*: Since ``ConfigParser`` supports *string interpolation*, to represent the character ``%`` you need to escape it as ``%%``.
 
@@ -124,6 +125,7 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     SECRET_KEY=ARANDOMSECRETKEY
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%
+    #COMMENTED=42
 
 Example: How do I use it with Django?
 -------------------------------------
