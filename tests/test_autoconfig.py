@@ -34,3 +34,12 @@ def test_autoconfig_exception():
     with patch('os.path.exists', side_effect=Exception('PermissionDenied')):
         assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_autoconfig_env_environ_override():
+    os.environ['Key'] = 'NEWENV'
+    config = AutoConfig()
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'NEWENV' == config('Key')
+    del os.environ['Key']
