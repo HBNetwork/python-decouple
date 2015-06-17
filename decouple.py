@@ -154,8 +154,9 @@ class AutoConfig(object):
         '.env': RepositoryEnv,
     }
 
-    def __init__(self):
+    def __init__(self, settings_path=None):
         self.config = None
+        self.settings_path = settings_path
 
     def _find_file(self, path):
         # look for all files in the current path
@@ -193,7 +194,10 @@ class AutoConfig(object):
 
     def __call__(self, *args, **kwargs):
         if not self.config:
-            self._load(self._caller_path())
+            if not self.settings_path:
+                self._load(self._caller_path())
+            else:
+                self._load(self.settings_path)
 
         return self.config(*args, **kwargs)
 
