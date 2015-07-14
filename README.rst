@@ -268,7 +268,7 @@ You can also parametrize the *Csv Helper* to return other types of data.
 .. code-block:: pycon
 
     >>> os.environ['LIST_OF_INTEGERS'] = '1,2,3,4,5'
-    >>> config('ALLOWED_HOSTS', cast=Csv(int))
+    >>> config('LIST_OF_INTEGERS', cast=Csv(int))
     [1, 2, 3, 4, 5]
 
     >>> os.environ['COMPLEX_STRING'] = '%virtual_env%\t *important stuff*\t   trailing spaces   '
