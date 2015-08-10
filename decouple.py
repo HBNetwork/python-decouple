@@ -122,13 +122,10 @@ class RepositoryEnv(RepositoryBase):
             self.data[k] = v
 
     def __contains__(self, key):
-        return key in self.data or key in os.environ
+        return key in self.data
 
     def get(self, key):
-        try:
-            return self.data[key]
-        except KeyError:
-            return os.environ[key]
+        return self.data.get(key)
 
 
 class RepositoryShell(RepositoryBase):
@@ -145,6 +142,28 @@ class RepositoryShell(RepositoryBase):
         return os.environ[key]
 
 
+class RepositoryChain(RepositoryBase):
+    """
+    Retrieves option keys from inner repositories.
+    """
+
+    def __init__(self, repositories):
+        self.repositories = repositories
+
+    def __contains__(self, key):
+        for repository in self.repositories:
+            if key in repository:
+                return True
+        return False
+
+    def get(self, key):
+        for repository in self.repositories:
+            if key in repository:
+                return repository.get(key)
+
+        return undefined
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
@@ -157,33 +176,28 @@ class AutoConfig(object):
     def __init__(self):
         self.config = None
 
-    def _find_file(self, path):
+    def _find_repositories(self, path):
         # look for all files in the current path
-        for configfile in self.SUPPORTED:
-            filename = os.path.join(path, configfile)
-            if os.path.exists(filename):
-                return filename
+        for configfile, repositoryClass in self.SUPPORTED.items():
+            # Avoid unintended permission errors
+            try:
+                filename = os.path.join(path, configfile)
+                if os.path.exists(filename):
+                    yield repositoryClass(filename)
+            except Exception:
+                pass
 
         # search the parent
         parent = os.path.dirname(path)
         if parent and parent != os.path.sep:
-            return self._find_file(parent)
-
-        # reached root without finding any files.
-        return ''
+            for repository in self._find_repositories(parent):
+                yield repository
 
     def _load(self, path):
-        # Avoid unintended permission errors
-        try:
-            filename = self._find_file(path)
-        except Exception:
-            filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename))
+        repositories = [RepositoryShell(), ]
+        repositories.extend(self._find_repositories(path))
 
-        if not Repository:
-            Repository = RepositoryShell
-
-        self.config = Config(Repository(filename))
+        self.config = Config(RepositoryChain(repositories))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
