@@ -12,11 +12,29 @@ def test_autoconfig_env():
         assert 'ENV' == config('KEY')
 
 
+def test_autoconfig_env_override():
+    os.environ['KEY'] = 'ENV VAR'
+    config = AutoConfig()
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'ENV VAR' == config('KEY')
+    del os.environ['KEY']
+
+
 def test_autoconfig_ini():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'project')
     with patch.object(config, '_caller_path', return_value=path):
         assert 'INI' == config('KEY')
+
+
+def test_autoconfig_ini_override():
+    os.environ['KEY'] = 'INI VAR'
+    config = AutoConfig()
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'INI VAR' == config('KEY')
+    del os.environ['KEY']
 
 
 def test_autoconfig_none():
