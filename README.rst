@@ -196,21 +196,32 @@ How it works?
 
 - ``RepositoryEnv``
 
-    Can read ``.env`` files and when a parameter does not exist there,
-    it tries to find it on ``os.environ``.
+    Can read ``.env`` files.
 
     This process does **not** change nor add any environment variables.
 
 - ``RepositoryShell``
 
-    Can only read values from ``os.environ``.
+    Can read values from ``os.environ``.
+
+- ``RepositoryChain``
+
+    Receives a list of repositories and iterate over then to retrive parameters.
+
+    Return the first value found.
 
 - ``AutoConfig``
 
     Detects which configuration repository you're using.
 
-    It recursively searches up your configuration module path looking for a
-    ``settings.ini`` or a ``.env`` file.
+    By default, ``AutoConfig`` creates a ``RepositoryChain`` using
+    ``RepositoryShell`` at the hightest priority and it recursively searches up
+    your configuration module path looking for a ``settings.ini`` and/or a
+    ``.env`` file. All configuration files found will be chained.
+
+    This means that environment variables are used if defined, with fallback to
+    the configuration files.
+
 
 The **config** object is an instance of ``AutoConfig`` to improve
 *decouple*'s usage.

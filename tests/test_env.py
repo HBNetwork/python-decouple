@@ -66,7 +66,8 @@ def test_env_bool_false(config):
 def test_env_os_environ(config):
     os.environ['KeyFallback'] = 'On'
     assert True == config('KeyTrue', cast=bool)
-    assert True == config('KeyFallback', cast=bool)
+    with pytest.raises(UndefinedValueError):
+        config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
 
 def test_env_undefined(config):
