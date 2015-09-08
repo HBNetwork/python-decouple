@@ -161,7 +161,7 @@ class AutoConfig(object):
         # look for all files in the current path
         for configfile in self.SUPPORTED:
             filename = os.path.join(path, configfile)
-            if os.path.exists(filename):
+            if os.path.isfile(filename):
                 return filename
 
         # search the parent
