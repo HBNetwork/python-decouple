@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 import sys
 from mock import patch, mock_open
 import pytest
@@ -31,6 +32,7 @@ KeyEmpty=
 PercentIsEscaped=%%
 Interpolation=%(KeyOff)s
 IgnoreSpace = text
+KeyOverrideByEnv=NotThis
 '''
 
 @pytest.fixture(scope='module')
@@ -85,3 +87,8 @@ def test_ini_empty(config):
 
 def test_ini_support_space(config):
     assert 'text' == config('IgnoreSpace')
+
+def test_ini_os_environ(config):
+    os.environ['KeyOverrideByEnv'] = 'This'
+    assert 'This' == config('KeyOverrideByEnv')
+    del os.environ['KeyOverrideByEnv']

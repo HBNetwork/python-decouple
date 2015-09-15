@@ -33,6 +33,7 @@ NoInterpolation=%(KeyOff)s
 IgnoreSpace = text
 RespectSingleQuoteSpace = ' text'
 RespectDoubleQuoteSpace = " text"
+KeyOverrideByEnv=NotThis
 '''
 
 @pytest.fixture(scope='module')
@@ -64,10 +65,9 @@ def test_env_bool_false(config):
     assert False == config('KeyOff', cast=bool)
 
 def test_env_os_environ(config):
-    os.environ['KeyFallback'] = 'On'
-    assert True == config('KeyTrue', cast=bool)
-    assert True == config('KeyFallback', cast=bool)
-    del os.environ['KeyFallback']
+    os.environ['KeyOverrideByEnv'] = 'This'
+    assert 'This' == config('KeyOverrideByEnv')
+    del os.environ['KeyOverrideByEnv']
 
 def test_env_undefined(config):
     with pytest.raises(UndefinedValueError):

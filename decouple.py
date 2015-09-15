@@ -99,10 +99,12 @@ class RepositoryIni(RepositoryBase):
         self.parser.readfp(open(source))
 
     def __contains__(self, key):
-        return self.parser.has_option(self.SECTION, key)
+        return (key in os.environ or
+                self.parser.has_option(self.SECTION, key))
 
     def get(self, key):
-        return self.parser.get(self.SECTION, key)
+        return (os.environ.get(key) or
+                self.parser.get(self.SECTION, key))
 
 
 class RepositoryEnv(RepositoryBase):
@@ -122,13 +124,10 @@ class RepositoryEnv(RepositoryBase):
             self.data[k] = v
 
     def __contains__(self, key):
-        return key in self.data or key in os.environ
+        return key in os.environ or key in self.data
 
     def get(self, key):
-        try:
-            return self.data[key]
-        except KeyError:
-            return os.environ[key]
+        return os.environ.get(key) or self.data[key]
 
 
 class RepositoryShell(RepositoryBase):
