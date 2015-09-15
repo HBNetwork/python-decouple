@@ -6,7 +6,7 @@ import os
 README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup(name='python-decouple',
-      version='2.4',
+      version='3.0',
       description='Strict separation of settings from code.',
       long_description=open(README).read(),
       author="Henrique Bastos", author_email="henrique@bastos.net",
