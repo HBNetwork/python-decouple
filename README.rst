@@ -180,6 +180,20 @@ If ``SECRET_KEY`` is not present on the ``.env``, *decouple* will raise an ``Und
 
 This *fail fast* policy helps you avoid chasing misbehaviors when you eventually forget a parameter.
 
+Overriding config files with environment variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some times you may want to change a parameter value without having to edit the ``.ini`` or ``.env`` files.
+
+Since version 3.0, *decouple* respect the *unix way*. So environment variables have precedence over config files.
+
+To override a config parameter you can simply:
+
+.. code-block:: console
+
+    DEBUG=True python manage.py
+
+
 How it works?
 =============
 
