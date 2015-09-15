@@ -26,9 +26,6 @@ for separating settings from code.
     :target: https://crate.io/packages/python-decouple/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/python-decouple/badge.png
-    :target: https://crate.io/packages/python-decouple/
-    :alt: Number of PyPI downloads
 
 Why?
 ----
