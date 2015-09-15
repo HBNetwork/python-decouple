@@ -192,14 +192,15 @@ How it works?
 
 - ``RepositoryIni``
 
-    Can read values from ini files.
+    Can read values from ``os.environ`` and ini files, in that order.
+
+    **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
 
 - ``RepositoryEnv``
 
-    Can read ``.env`` files and when a parameter does not exist there,
-    it tries to find it on ``os.environ``.
+    Can read values from ``os.environ`` and ``.env`` files.
 
-    This process does **not** change nor add any environment variables.
+    **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
 
 - ``RepositoryShell``
 
