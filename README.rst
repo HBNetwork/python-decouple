@@ -26,6 +26,7 @@ for separating settings from code.
     :target: https://crate.io/packages/python-decouple/
     :alt: Latest PyPI version
 
+Package of the week on `simpleisbetterthancomplex.com <http://simpleisbetterthancomplex.com/2015/11/26/package-of-the-week-python-decouple.html>`_
 
 Why?
 ----
