@@ -174,7 +174,7 @@ class AutoConfig(object):
     def _load(self, path):
         # Avoid unintended permission errors
         try:
-            filename = self._find_file(path)
+            filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
         Repository = self.SUPPORTED.get(os.path.basename(filename))
