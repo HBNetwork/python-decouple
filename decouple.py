@@ -185,10 +185,8 @@ class AutoConfig(object):
         self.config = Config(Repository(filename))
 
     def _caller_path(self):
-        # MAGIC! Get the caller's module path.
-        frame = sys._getframe()
-        path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
-        return path
+        """ get current directory where python-decouple was called """
+        return os.getcwd()
 
     def __call__(self, *args, **kwargs):
         if not self.config:
