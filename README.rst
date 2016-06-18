@@ -124,6 +124,16 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     PERCENTILE=90%
     #COMMENTED=42
 
+Setting manually the location dir of the config files (``.env`` or ``.ini``)
+-----------------------------------------------------------------------------
+
+.. code-block:: python
+
+    from decouple import config
+    
+    # setting project root dir manually
+    config.set_config_dir(PROJECT_ROOT)
+
 Example: How do I use it with Django?
 -------------------------------------
 

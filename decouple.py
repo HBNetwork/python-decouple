@@ -148,6 +148,7 @@ class AutoConfig(object):
     """
     Autodetects the config file and type.
     """
+    config_path_dir = ""
     SUPPORTED = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
@@ -155,6 +156,9 @@ class AutoConfig(object):
 
     def __init__(self):
         self.config = None
+
+    def set_config_dir(self, config_dir):
+        self.config_path_dir = config_dir
 
     def _find_file(self, path):
         # look for all files in the current path
@@ -185,8 +189,14 @@ class AutoConfig(object):
         self.config = Config(Repository(filename))
 
     def _caller_path(self):
-        """ get current directory where python-decouple was called """
-        return os.getcwd()
+        # MAGIC! Get the caller's module path.
+        
+        if self.config_path_dir:
+            return self.config_path_dir
+        else:
+            frame = sys._getframe()
+            path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
+            return path
 
     def __call__(self, *args, **kwargs):
         if not self.config:
