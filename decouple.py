@@ -154,8 +154,9 @@ class AutoConfig(object):
         '.env': RepositoryEnv,
     }
 
-    def __init__(self):
+    def __init__(self, config_dir=None):
         self.config = None
+        self.config_path_dir=config_dir
 
     def set_config_dir(self, config_dir):
         self.config_path_dir = config_dir
