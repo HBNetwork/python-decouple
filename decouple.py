@@ -127,7 +127,7 @@ class RepositoryEnv(RepositoryBase):
         return key in os.environ or key in self.data
 
     def get(self, key):
-        return os.environ.get(key) or self.data[key]
+        return os.environ.get(key, '') or self.data.get(key, '')
 
 
 class RepositoryShell(RepositoryBase):
@@ -148,13 +148,18 @@ class AutoConfig(object):
     """
     Autodetects the config file and type.
     """
+    config_path_dir = ""
     SUPPORTED = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
     }
 
-    def __init__(self):
+    def __init__(self, config_dir=None):
         self.config = None
+        self.config_path_dir=config_dir
+
+    def set_config_dir(self, config_dir):
+        self.config_path_dir = config_dir
 
     def _find_file(self, path):
         # look for all files in the current path
@@ -186,9 +191,13 @@ class AutoConfig(object):
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
-        frame = sys._getframe()
-        path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
-        return path
+        
+        if self.config_path_dir:
+            return self.config_path_dir
+        else:
+            frame = sys._getframe()
+            path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
+            return path
 
     def __call__(self, *args, **kwargs):
         if not self.config:
