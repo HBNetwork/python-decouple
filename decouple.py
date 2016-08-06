@@ -147,13 +147,21 @@ class RepositoryShell(RepositoryBase):
 class AutoConfig(object):
     """
     Autodetects the config file and type.
+
+    Parameters
+    ----------
+    search_path : str, optional
+        Initial search path. If empty, the default search path is the
+        caller's path.
+
     """
     SUPPORTED = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
     }
 
-    def __init__(self):
+    def __init__(self, search_path=None):
+        self.search_path = search_path
         self.config = None
 
     def _find_file(self, path):
@@ -192,7 +200,7 @@ class AutoConfig(object):
 
     def __call__(self, *args, **kwargs):
         if not self.config:
-            self._load(self._caller_path())
+            self._load(self.search_path or self._caller_path())
 
         return self.config(*args, **kwargs)
 
