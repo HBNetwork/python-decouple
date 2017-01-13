@@ -60,3 +60,12 @@ def test_autoconfig_is_not_a_file():
     with patch('os.path.isfile', return_value=False):
         assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_autoconfig_env_environ_override():
+    os.environ['Key'] = 'NEWENV'
+    config = AutoConfig()
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'NEWENV' == config('Key')
+    del os.environ['Key']

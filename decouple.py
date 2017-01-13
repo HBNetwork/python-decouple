@@ -38,8 +38,10 @@ class Config(object):
     _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
                  '0': False, 'no': False, 'false': False, 'off': False}
 
-    def __init__(self, repository):
-        self.repository = repository
+    def __init__(self, repository=None):
+        self.repositories = [RepositoryShell()]
+        if repository:
+            self.repositories.append(repository)
 
     def _cast_boolean(self, value):
         """
@@ -55,8 +57,10 @@ class Config(object):
         """
         Return the value for option or default if defined.
         """
-        if option in self.repository:
-            value = self.repository.get(option)
+        for repository in self.repositories:
+            if option in repository:
+                value = repository.get(option)
+                break
         else:
             value = default
 
@@ -179,10 +183,10 @@ class AutoConfig(object):
             filename = ''
         Repository = self.SUPPORTED.get(os.path.basename(filename))
 
-        if not Repository:
-            Repository = RepositoryShell
-
-        self.config = Config(Repository(filename))
+        if Repository:
+            self.config = Config(Repository(filename))
+        else:
+            self.config = Config()
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
