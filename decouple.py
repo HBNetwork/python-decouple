@@ -113,15 +113,16 @@ class RepositoryEnv(RepositoryBase):
     """
     def __init__(self, source):
         self.data = {}
-
-        for line in open(source):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            k = k.strip()
-            v = v.strip().strip('\'"')
-            self.data[k] = v
+        
+        with open(source) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, v = line.split('=', 1)
+                k = k.strip()
+                v = v.strip().strip('\'"')
+                self.data[k] = v
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
