@@ -114,7 +114,8 @@ class RepositoryEnv(RepositoryBase):
     def __init__(self, source):
         self.data = {}
 
-        for line in open(source):
+        source_file = open(source)
+        for line in source_file:
             line = line.strip()
             if not line or line.startswith('#') or '=' not in line:
                 continue
@@ -122,6 +123,7 @@ class RepositoryEnv(RepositoryBase):
             k = k.strip()
             v = v.strip().strip('\'"')
             self.data[k] = v
+        source_file.close()
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
@@ -229,4 +231,3 @@ class Csv(object):
         splitter.whitespace_split = True
 
         return [transform(s) for s in splitter]
-
