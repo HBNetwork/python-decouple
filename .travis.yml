@@ -1,7 +1,19 @@
 language: python
+python: 3.6
+
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
+
 env:
 - TOXENV=py27
 - TOXENV=py33
+- TOXENV=py34
+- TOXENV=py35
+- TOXENV=py36
 install:
- - pip install tox==1.7.0
+ - pip install tox==2.7.0
 script: tox
