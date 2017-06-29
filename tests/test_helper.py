@@ -11,6 +11,10 @@ def test_csv():
     csv = Csv(int)
     assert [1, 2, 3, 4, 5] == csv('1,2,3,4,5')
 
+    csv = Csv(tuple_=True)
+    assert ('HTTP_X_FORWARDED_PROTO', 'https') == \
+           csv('HTTP_X_FORWARDED_PROTO, https')
+
     csv = Csv(cast=lambda s: s.upper(), delimiter='\t', strip=' %*')
     assert ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES'] == \
            csv('%virtual_env%\t *important stuff*\t   trailing spaces   ')
