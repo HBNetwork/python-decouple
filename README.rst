@@ -240,6 +240,7 @@ However, your Python code may expect some other value type, for example:
 * Django's DEBUG expects a boolean True or False.
 * Django's EMAIL_PORT expects an integer.
 * Django's ALLOWED_HOSTS expects a list of hostnames.
+* Django's SECURE_PROXY_SSL_HEADER expects a tuple with two elements, the name of the header to look for and the required value.
 
 To meet this need, the `config` function accepts a `cast` argument which
 receives any *callable*, that will be used to *transform* the string value
@@ -260,6 +261,10 @@ Let's see some examples for the above mentioned cases:
     >>> os.environ['ALLOWED_HOSTS'] = '.localhost, .herokuapp.com'
     >>> config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
     ['.localhost', '.herokuapp.com']
+
+    >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
+    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(tuple_=True))
+    ('HTTP_X_FORWARDED_PROTO', 'https')
 
 As you can see, `cast` is very flexible. But the last example got a bit complex.
 
