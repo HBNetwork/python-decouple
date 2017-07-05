@@ -91,7 +91,7 @@ On your ``settings.py``.
 Where the settings data are stored?
 -----------------------------------
 
-*Decouple* supports both *.ini* and *.env* files.
+*Decouple* supports *.ini*, *.yaml* and *.env* files.
 
 Ini file
 ~~~~~~~~
@@ -123,6 +123,27 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%
     #COMMENTED=42
+
+YAML file
+~~~~~~~~
+
+Simply create a ``settings.yaml`` text file on your repository's root directory in the form:
+
+.. code-block:: yaml
+
+    DEBUG: True
+    TEMPLATE_DEBUG: True
+    SECRET_KEY: ARANDOMSECRETKEY
+    DATABASES:
+        default:
+            ENGINE: django.db.backends.sqlite3
+            NAME: db.sqlite3
+    ALLOWED_HOSTS:
+        - localhost
+        - mysite.com
+
+    PERCENTILE: 90%
+    #COMMENTED: 42
 
 Example: How do I use it with Django?
 -------------------------------------
@@ -214,6 +235,12 @@ How it works?
 
     **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
 
+- ``RepositoryYaml``
+
+    Can read values from ``os.environ`` and YAML files.
+
+    **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
+
 - ``RepositoryShell``
 
     Can only read values from ``os.environ``.
@@ -223,7 +250,7 @@ How it works?
     Detects which configuration repository you're using.
 
     It recursively searches up your configuration module path looking for a
-    ``settings.ini`` or a ``.env`` file.
+    ``settings.ini``, a ``settings.yaml`` or a ``.env`` file.
 
 The **config** object is an instance of ``AutoConfig`` to improve
 *decouple*'s usage.

@@ -4,6 +4,8 @@ import sys
 import string
 from shlex import shlex
 
+import yaml
+
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -142,6 +144,24 @@ class RepositoryShell(RepositoryBase):
 
     def get(self, key):
         return os.environ[key]
+
+
+class RepositoryYaml(RepositoryBase):
+    """
+    Retrieves option keys from .yaml files
+    """
+    def __init__(self, source):
+        try:
+            self.data = yaml.load(open(source))
+        except yaml.YAMLError as exc:
+            print("Error in settings file:", exc)
+
+    def __contains__(self, key):
+        return key in os.environ or key in self.data
+
+    def get(self, key):
+        return os.environ.get(key) or self.data[key]
+
 
 
 class AutoConfig(object):
