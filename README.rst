@@ -124,7 +124,7 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     PERCENTILE=90%
     #COMMENTED=42
 
-Env file
+YAML file
 ~~~~~~~~
 
 Simply create a ``settings.yaml`` text file on your repository's root directory in the form:
