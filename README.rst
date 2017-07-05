@@ -91,7 +91,7 @@ On your ``settings.py``.
 Where the settings data are stored?
 -----------------------------------
 
-*Decouple* supports both *.ini*, *.yaml* and *.env* files.
+*Decouple* supports *.ini*, *.yaml* and *.env* files.
 
 Ini file
 ~~~~~~~~
