@@ -154,7 +154,7 @@ class RepositoryYaml(RepositoryBase):
         try:
             self.data = yaml.load(open(source))
         except yaml.YAMLError as exc:
-            print "Error in settings file:", exc
+            print("Error in settings file:", exc)
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
