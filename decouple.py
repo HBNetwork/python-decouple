@@ -104,7 +104,8 @@ class RepositoryIni(RepositoryEmpty):
 
     def __init__(self, source):
         self.parser = ConfigParser()
-        self.parser.readfp(open(source))
+        with open(source) as file_:
+            self.parser.readfp(file_)
 
     def __contains__(self, key):
         return (key in os.environ or
@@ -121,14 +122,15 @@ class RepositoryEnv(RepositoryEmpty):
     def __init__(self, source):
         self.data = {}
 
-        for line in open(source):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            k = k.strip()
-            v = v.strip().strip('\'"')
-            self.data[k] = v
+        with open(source) as file_:
+            for line in file_:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, v = line.split('=', 1)
+                k = k.strip()
+                v = v.strip().strip('\'"')
+                self.data[k] = v
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
