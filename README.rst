@@ -14,18 +14,17 @@ It also makes easy for you to:
 It was originally designed for Django, but became an independent generic tool
 for separating settings from code.
 
-.. image:: https://travis-ci.org/henriquebastos/python-decouple.png?branch=master
+.. image:: https://img.shields.io/travis/henriquebastos/python-decouple.svg
     :target: https://travis-ci.org/henriquebastos/python-decouple
-    :alt: Test Status
+    :alt: Build Status
 
 .. image:: https://landscape.io/github/henriquebastos/python-decouple/master/landscape.png
     :target: https://landscape.io/github/henriquebastos/python-decouple/master
-    :alt: Code Helth
+    :alt: Code Health
 
-.. image:: https://pypip.in/v/python-decouple/badge.png
-    :target: https://crate.io/packages/python-decouple/
+.. image:: https://img.shields.io/pypi/v/python-decouple.svg
+    :target: https://pypi.python.org/pypi/python-decouple/
     :alt: Latest PyPI version
-
 
 Why?
 ----
@@ -129,7 +128,7 @@ Example: How do I use it with Django?
 
 Given that I have a ``.env`` file at my repository root directory, here is a snippet of my ``settings.py``.
 
-I also recommend using `unipath <https://pypi.python.org/pypi/Unipath>`_
+I also recommend using `pathlib <https://docs.python.org/3/library/pathlib.html>`_
 and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
 .. code-block:: python
@@ -295,7 +294,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Henrique Bastos <henrique at bastos dot net>
+Copyright (c) 2017 Henrique Bastos <henrique at bastos dot net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
