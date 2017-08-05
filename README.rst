@@ -222,8 +222,10 @@ How it works?
     Detects which configuration repository you're using.
 
     It recursively searches up your configuration module path looking for a
-    ``settings.ini`` or a ``.env`` file. Optionally, it accepts an initial
-    search path argument.
+    ``settings.ini`` or a ``.env`` file.
+
+    Optionally, it accepts ``search_path`` argument to explicitly define
+    where the search starts.
 
 The **config** object is an instance of ``AutoConfig`` to improve
 *decouple*'s usage.
