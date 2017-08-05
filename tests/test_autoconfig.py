@@ -12,12 +12,6 @@ def test_autoconfig_env():
         assert 'ENV' == config('KEY')
 
 
-def test_autoconfig_search_path():
-    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
-    config = AutoConfig(path)
-    assert 'ENV' == config('KEY')
-
-
 def test_autoconfig_ini():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'project')
@@ -66,3 +60,9 @@ def test_autoconfig_is_not_a_file():
     with patch('os.path.isfile', return_value=False):
         assert True == config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_autoconfig_search_path():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'custom-path')
+    config = AutoConfig(path)
+    assert 'CUSTOMPATH' == config('KEY')
