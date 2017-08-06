@@ -85,18 +85,18 @@ class Config(object):
         return self.get(*args, **kwargs)
 
 
-class RepositoryBase(object):
-    def __init__(self, source):
-        raise NotImplementedError
+class RepositoryEmpty(object):
+    def __init__(self, source=''):
+        pass
 
     def __contains__(self, key):
-        raise NotImplementedError
+        return False
 
     def __getitem__(self, key):
-        raise NotImplementedError
+        return None
 
 
-class RepositoryIni(RepositoryBase):
+class RepositoryIni(RepositoryEmpty):
     """
     Retrieves option keys from .ini files.
     """
@@ -114,7 +114,7 @@ class RepositoryIni(RepositoryBase):
         return self.parser.get(self.SECTION, key)
 
 
-class RepositoryEnv(RepositoryBase):
+class RepositoryEnv(RepositoryEmpty):
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
@@ -135,20 +135,6 @@ class RepositoryEnv(RepositoryBase):
 
     def __getitem__(self, key):
         return self.data[key]
-
-
-class RepositoryShell(RepositoryBase):
-    """
-    Retrieves option keys from os.environ.
-    """
-    def __init__(self, source=None):
-        pass
-
-    def __contains__(self, key):
-        return key in os.environ
-
-    def __getitem__(self, key):
-        return os.environ[key]
 
 
 class AutoConfig(object):
@@ -192,10 +178,7 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename))
-
-        if not Repository:
-            Repository = RepositoryShell
+        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
 
         self.config = Config(Repository(filename))
 

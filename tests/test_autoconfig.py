@@ -2,7 +2,7 @@
 import os
 import pytest
 from mock import patch
-from decouple import AutoConfig
+from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty
 
 
 def test_autoconfig_env():
@@ -67,3 +67,13 @@ def test_autoconfig_search_path():
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'custom-path')
     config = AutoConfig(path)
     assert 'CUSTOMPATH' == config('KEY')
+
+
+def test_autoconfig_empty_repository():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'custom-path')
+    config = AutoConfig(path)
+
+    with pytest.raises(UndefinedValueError):
+        config('KeyNotInEnvAndNotInRepository')
+
+    assert isinstance(config.config.repository, RepositoryEmpty)
