@@ -42,7 +42,7 @@ The first 2 are *project settings* the last 3 are *instance settings*.
 You should be able to change *instance settings* without redeploying your app.
 
 Why not just use environment variables?
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *Envvars* works, but since ``os.environ`` only returns strings, it's tricky.
 
@@ -60,17 +60,17 @@ Since it's a non-empty string, it will be evaluated as True.
 
 *Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
 
-Install
--------
+Usage
+-----
+
+Install:
 
 .. code-block:: console
 
     pip install python-decouple
 
-Usage
------
 
-On your ``settings.py``.
+Then use it on your ``settings.py``.
 
 #. Import the ``config`` object:
 
@@ -194,7 +194,13 @@ To override a config parameter you can simply do:
 How it works?
 =============
 
-*Decouple* is made of 5 classes:
+*Decouple* always searches for *Options* in this order:
+
+#. Environment variables;
+#. Repository: ini or .env file;
+#. default argument passed to config.
+
+There are 4 classes doing the magic:
 
 
 - ``Config``
@@ -213,13 +219,9 @@ How it works?
 
     **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
 
-- ``RepositoryShell``
-
-    Can only read values from ``os.environ``.
-
 - ``AutoConfig``
 
-    Detects which configuration repository you're using.
+    This is a *lazy* ``Config`` factory that detects which configuration repository you're using.
 
     It recursively searches up your configuration module path looking for a
     ``settings.ini`` or a ``.env`` file.
@@ -227,15 +229,15 @@ How it works?
     Optionally, it accepts ``search_path`` argument to explicitly define
     where the search starts.
 
-The **config** object is an instance of ``AutoConfig`` to improve
-*decouple*'s usage.
+The **config** object is an instance of ``AutoConfig`` that instantiates a ``Config`` with the proper ``Repository``
+on the first time it is used.
+
 
 Understanding the CAST argument
 -------------------------------
 
-By default, all values returned by `decouple` are `strings`.
-
-This happens because they are read from `text files` or the `envvars`.
+By default, all values returned by `decouple` are `strings`, after all they are
+read from `text files` or the `envvars`.
 
 However, your Python code may expect some other value type, for example:
 
@@ -266,7 +268,7 @@ Let's see some examples for the above mentioned cases:
 As you can see, `cast` is very flexible. But the last example got a bit complex.
 
 Built in Csv Helper
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 To address the complexity of the last example, *Decouple* comes with an extensible *Csv helper*.
 
