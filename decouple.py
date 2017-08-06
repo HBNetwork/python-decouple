@@ -51,20 +51,28 @@ class Config(object):
 
         return self._BOOLEANS[value.lower()]
 
+    @staticmethod
+    def _cast_do_nothing(value):
+        return value
+
     def get(self, option, default=undefined, cast=undefined):
         """
         Return the value for option or default if defined.
         """
-        if option in self.repository:
-            value = self.repository.get(option)
+
+        # We can't avoid __contains__ because value may be empty.
+        if option in os.environ:
+            value = os.environ[option]
+        elif option in self.repository:
+            value = self.repository[option]
         else:
+            if isinstance(default, Undefined):
+                raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+
             value = default
 
-        if isinstance(value, Undefined):
-            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
-
         if isinstance(cast, Undefined):
-            cast = lambda v: v  # nop
+            cast = self._cast_do_nothing
         elif cast is bool:
             cast = self._cast_boolean
 
@@ -84,7 +92,7 @@ class RepositoryBase(object):
     def __contains__(self, key):
         raise NotImplementedError
 
-    def get(self, key):
+    def __getitem__(self, key):
         raise NotImplementedError
 
 
@@ -102,9 +110,8 @@ class RepositoryIni(RepositoryBase):
         return (key in os.environ or
                 self.parser.has_option(self.SECTION, key))
 
-    def get(self, key):
-        return (os.environ.get(key) or
-                self.parser.get(self.SECTION, key))
+    def __getitem__(self, key):
+        return self.parser.get(self.SECTION, key)
 
 
 class RepositoryEnv(RepositoryBase):
@@ -126,8 +133,8 @@ class RepositoryEnv(RepositoryBase):
     def __contains__(self, key):
         return key in os.environ or key in self.data
 
-    def get(self, key):
-        return os.environ.get(key) or self.data[key]
+    def __getitem__(self, key):
+        return self.data[key]
 
 
 class RepositoryShell(RepositoryBase):
@@ -140,7 +147,7 @@ class RepositoryShell(RepositoryBase):
     def __contains__(self, key):
         return key in os.environ
 
-    def get(self, key):
+    def __getitem__(self, key):
         return os.environ[key]
 
 

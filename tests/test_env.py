@@ -75,6 +75,12 @@ def test_env_os_environ(config):
     del os.environ['KeyOverrideByEnv']
 
 
+def test_env_undefined_but_present_in_os_environ(config):
+    os.environ['KeyOnlyEnviron'] = ''
+    assert '' == config('KeyOnlyEnviron')
+    del os.environ['KeyOnlyEnviron']
+
+
 def test_env_undefined(config):
     with pytest.raises(UndefinedValueError):
         config('UndefinedKey')
@@ -86,6 +92,7 @@ def test_env_default_none(config):
 
 def test_env_empty(config):
     assert '' == config('KeyEmpty', default=None)
+    assert '' == config('KeyEmpty')
 
 
 def test_env_support_space(config):
