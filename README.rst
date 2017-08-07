@@ -294,6 +294,33 @@ You can also parametrize the *Csv Helper* to return other types of data.
     >>> csv(os.environ['COMPLEX_STRING'])
     ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES']
 
+Contribute
+==========
+
+Your contribution is welcome.
+
+Setup you development environment:
+
+.. code-block:: console
+
+    git clone git@github.com:henriquebastos/python-decouple.git
+    cd python-decouple
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    tox
+
+*Decouple* supports both Python 2.7 and 3.6. Make sure you have both installed.
+
+I use `pyenv <https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_ to
+manage multiple Python versions and I described my workspace setup on this article:
+`The definitive guide to setup my Python workspace
+<https://medium.com/@henriquebastos/the-definitive-guide-to-setup-my-python-workspace-628d68552e14>`_
+
+You can submit pull requests and issues for discussion. However I only
+consider merge tested code.
+
+
 License
 =======
 
