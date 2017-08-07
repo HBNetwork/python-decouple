@@ -249,7 +249,7 @@ However, your Python code may expect some other value type, for example:
 * Django's DEBUG expects a boolean True or False.
 * Django's EMAIL_PORT expects an integer.
 * Django's ALLOWED_HOSTS expects a list of hostnames.
-* Django's SECURE_PROXY_SSL_HEADER expects a tuple with two elements, the name of the header to look for and the required value.
+* Django's SECURE_PROXY_SSL_HEADER expects a `tuple` with two elements, the name of the header to look for and the required value.
 
 To meet this need, the `config` function accepts a `cast` argument which
 receives any *callable*, that will be used to *transform* the string value
@@ -303,6 +303,15 @@ You can also parametrize the *Csv Helper* to return other types of data.
     >>> csv = Csv(cast=lambda s: s.upper(), delimiter='\t', strip=' %*')
     >>> csv(os.environ['COMPLEX_STRING'])
     ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES']
+
+By default *Csv* returns a `list`, but you can get a `tuple` or whatever you want using the `post_process` argument:
+
+.. code-block:: pycon
+
+    >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
+    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))
+    ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 Contribute
 ==========
