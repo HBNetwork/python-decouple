@@ -209,7 +209,7 @@ class Csv(object):
     Produces a csv parser that return a list of transformed elements.
     """
 
-    def __init__(self, cast=text_type, delimiter=',', strip=string.whitespace, tuple_=False):
+    def __init__(self, cast=text_type, delimiter=',', strip=string.whitespace, post_process=list):
         """
         Parameters:
         cast -- callable that transforms the item just before it's added to the list.
@@ -220,7 +220,7 @@ class Csv(object):
         self.cast = cast
         self.delimiter = delimiter
         self.strip = strip
-        self.tuple_ = tuple_
+        self.post_process = post_process
 
     def __call__(self, value):
         """The actual transformation"""
@@ -230,9 +230,4 @@ class Csv(object):
         splitter.whitespace = self.delimiter
         splitter.whitespace_split = True
 
-        result = [transform(s) for s in splitter]
-
-        if self.tuple_:
-            result = tuple(result)
-
-        return result
+        return self.post_process(transform(s) for s in splitter)
