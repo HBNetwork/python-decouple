@@ -106,7 +106,11 @@ def test_ini_os_environ(config):
     del os.environ['KeyOverrideByEnv']
 
 
-def test_env_undefined_but_present_in_os_environ(config):
+def test_ini_undefined_but_present_in_os_environ(config):
     os.environ['KeyOnlyEnviron'] = ''
     assert '' == config('KeyOnlyEnviron')
     del os.environ['KeyOnlyEnviron']
+
+
+def test_ini_empty_string_means_false(config):
+    assert False is config('KeyEmpty', cast=bool)

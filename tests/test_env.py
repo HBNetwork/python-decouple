@@ -99,3 +99,7 @@ def test_env_support_space(config):
     assert 'text' == config('IgnoreSpace')
     assert ' text' == config('RespectSingleQuoteSpace')
     assert ' text' == config('RespectDoubleQuoteSpace')
+
+
+def test_env_empty_string_means_false(config):
+    assert False is config('KeyEmpty', cast=bool)
