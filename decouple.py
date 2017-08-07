@@ -39,7 +39,7 @@ class Config(object):
     Handle .env file format used by Foreman.
     """
     _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
-                 '0': False, 'no': False, 'false': False, 'off': False}
+                 '0': False, 'no': False, 'false': False, 'off': False, '': False}
 
     def __init__(self, repository):
         self.repository = repository
@@ -54,20 +54,28 @@ class Config(object):
 
         return self._BOOLEANS[value.lower()]
 
+    @staticmethod
+    def _cast_do_nothing(value):
+        return value
+
     def get(self, option, default=undefined, cast=undefined):
         """
         Return the value for option or default if defined.
         """
-        if option in self.repository:
-            value = self.repository.get(option)
+
+        # We can't avoid __contains__ because value may be empty.
+        if option in os.environ:
+            value = os.environ[option]
+        elif option in self.repository:
+            value = self.repository[option]
         else:
+            if isinstance(default, Undefined):
+                raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+
             value = default
 
-        if isinstance(value, Undefined):
-            raise UndefinedValueError('%s option not found and default value was not defined.' % option)
-
         if isinstance(cast, Undefined):
-            cast = lambda v: v  # nop
+            cast = self._cast_do_nothing
         elif cast is bool:
             cast = self._cast_boolean
 
@@ -80,18 +88,18 @@ class Config(object):
         return self.get(*args, **kwargs)
 
 
-class RepositoryBase(object):
-    def __init__(self, source):
-        raise NotImplementedError
+class RepositoryEmpty(object):
+    def __init__(self, source=''):
+        pass
 
     def __contains__(self, key):
-        raise NotImplementedError
+        return False
 
-    def get(self, key):
-        raise NotImplementedError
+    def __getitem__(self, key):
+        return None
 
 
-class RepositoryIni(RepositoryBase):
+class RepositoryIni(RepositoryEmpty):
     """
     Retrieves option keys from .ini files.
     """
@@ -99,17 +107,18 @@ class RepositoryIni(RepositoryBase):
 
     def __init__(self, source):
         self.parser = ConfigParser()
-        self.parser.readfp(open(source))
+        with open(source) as file_:
+            self.parser.readfp(file_)
 
     def __contains__(self, key):
         return (key in os.environ or
                 self.parser.has_option(self.SECTION, key))
 
-    def get(self, key):
-        return (os.environ.get(key) or
-                self.parser.get(self.SECTION, key))
+    def __getitem__(self, key):
+        return self.parser.get(self.SECTION, key)
 
 
+<<<<<<< HEAD
 class RepositoryJSON(RepositoryBase):
 
     def __init__(self, source):
@@ -133,45 +142,42 @@ class RepositoryJSON(RepositoryBase):
 
 
 class RepositoryEnv(RepositoryBase):
+=======
+class RepositoryEnv(RepositoryEmpty):
+>>>>>>> e842af614e6840d6a92f0ebc9852bc0099c08851
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
     def __init__(self, source):
         self.data = {}
 
-        for line in open(source):
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            k = k.strip()
-            v = v.strip().strip('\'"')
-            self.data[k] = v
+        with open(source) as file_:
+            for line in file_:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, v = line.split('=', 1)
+                k = k.strip()
+                v = v.strip().strip('\'"')
+                self.data[k] = v
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
 
-    def get(self, key):
-        return os.environ.get(key) or self.data[key]
-
-
-class RepositoryShell(RepositoryBase):
-    """
-    Retrieves option keys from os.environ.
-    """
-    def __init__(self, source=None):
-        pass
-
-    def __contains__(self, key):
-        return key in os.environ
-
-    def get(self, key):
-        return os.environ[key]
+    def __getitem__(self, key):
+        return self.data[key]
 
 
 class AutoConfig(object):
     """
     Autodetects the config file and type.
+
+    Parameters
+    ----------
+    search_path : str, optional
+        Initial search path. If empty, the default search path is the
+        caller's path.
+
     """
     SUPPORTED = {
         'settings.json': RepositoryJSON,
@@ -179,7 +185,8 @@ class AutoConfig(object):
         '.env': RepositoryEnv,
     }
 
-    def __init__(self):
+    def __init__(self, search_path=None):
+        self.search_path = search_path
         self.config = None
 
     def _find_file(self, path):
@@ -203,10 +210,7 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename))
-
-        if not Repository:
-            Repository = RepositoryShell
+        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
 
         self.config = Config(Repository(filename))
 
@@ -218,7 +222,7 @@ class AutoConfig(object):
 
     def __call__(self, *args, **kwargs):
         if not self.config:
-            self._load(self._caller_path())
+            self._load(self.search_path or self._caller_path())
 
         return self.config(*args, **kwargs)
 

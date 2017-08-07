@@ -2,7 +2,7 @@
 import os
 import pytest
 from mock import patch
-from decouple import AutoConfig
+from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty
 
 
 def test_autoconfig_env():
@@ -17,6 +17,7 @@ def test_autoconfig_ini():
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'project')
     with patch.object(config, '_caller_path', return_value=path):
         assert 'INI' == config('KEY')
+
 
 def test_autoconfig_ini_in_subdir():
     """
@@ -42,7 +43,7 @@ def test_autoconfig_none():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'none')
     with patch('os.path.isfile', return_value=False):
-        assert True == config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
 
 
@@ -50,7 +51,7 @@ def test_autoconfig_exception():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
     with patch('os.path.isfile', side_effect=Exception('PermissionDenied')):
-        assert True == config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
 
 
@@ -58,5 +59,21 @@ def test_autoconfig_is_not_a_file():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
     with patch('os.path.isfile', return_value=False):
-        assert True == config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_autoconfig_search_path():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'custom-path')
+    config = AutoConfig(path)
+    assert 'CUSTOMPATH' == config('KEY')
+
+
+def test_autoconfig_empty_repository():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'custom-path')
+    config = AutoConfig(path)
+
+    with pytest.raises(UndefinedValueError):
+        config('KeyNotInEnvAndNotInRepository')
+
+    assert isinstance(config.config.repository, RepositoryEmpty)

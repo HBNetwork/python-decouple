@@ -14,21 +14,25 @@ It also makes easy for you to:
 It was originally designed for Django, but became an independent generic tool
 for separating settings from code.
 
-.. image:: https://travis-ci.org/henriquebastos/python-decouple.png?branch=master
+.. image:: https://img.shields.io/travis/henriquebastos/python-decouple.svg
     :target: https://travis-ci.org/henriquebastos/python-decouple
-    :alt: Test Status
+    :alt: Build Status
 
 .. image:: https://landscape.io/github/henriquebastos/python-decouple/master/landscape.png
     :target: https://landscape.io/github/henriquebastos/python-decouple/master
-    :alt: Code Helth
+    :alt: Code Health
 
-.. image:: https://pypip.in/v/python-decouple/badge.png
-    :target: https://crate.io/packages/python-decouple/
+.. image:: https://img.shields.io/pypi/v/python-decouple.svg
+    :target: https://pypi.python.org/pypi/python-decouple/
     :alt: Latest PyPI version
 
 
+
+.. contents:: Summary
+
+
 Why?
-----
+====
 
 Web framework's settings stores many different kinds of parameters:
 
@@ -61,17 +65,17 @@ Since it's a non-empty string, it will be evaluated as True.
 
 *Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
 
-Install
--------
+Usage
+=====
+
+Install:
 
 .. code-block:: console
 
     pip install python-decouple
 
-Usage
------
 
-On your ``settings.py``.
+Then use it on your ``settings.py``.
 
 #. Import the ``config`` object:
 
@@ -145,7 +149,7 @@ Example: How do I use it with Django?
 
 Given that I have a ``.env`` file at my repository root directory, here is a snippet of my ``settings.py``.
 
-I also recommend using `unipath <https://pypi.python.org/pypi/Unipath>`_
+I also recommend using `pathlib <https://docs.python.org/3/library/pathlib.html>`_
 and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
 .. code-block:: python
@@ -211,7 +215,13 @@ To override a config parameter you can simply do:
 How it works?
 =============
 
-*Decouple* is made of 5 classes:
+*Decouple* always searches for *Options* in this order:
+
+#. Environment variables;
+#. Repository: ini or .env file;
+#. default argument passed to config.
+
+There are 4 classes doing the magic:
 
 
 - ``Config``
@@ -230,26 +240,25 @@ How it works?
 
     **Note:** Since version 3.0 *decouple* respects unix precedence of environment variables *over* config files.
 
-- ``RepositoryShell``
-
-    Can only read values from ``os.environ``.
-
 - ``AutoConfig``
 
-    Detects which configuration repository you're using.
+    This is a *lazy* ``Config`` factory that detects which configuration repository you're using.
 
     It recursively searches up your configuration module path looking for a
     ``settings.ini`` or a ``.env`` file.
 
-The **config** object is an instance of ``AutoConfig`` to improve
-*decouple*'s usage.
+    Optionally, it accepts ``search_path`` argument to explicitly define
+    where the search starts.
+
+The **config** object is an instance of ``AutoConfig`` that instantiates a ``Config`` with the proper ``Repository``
+on the first time it is used.
+
 
 Understanding the CAST argument
 -------------------------------
 
-By default, all values returned by `decouple` are `strings`.
-
-This happens because they are read from `text files` or the `envvars`.
+By default, all values returned by `decouple` are `strings`, after all they are
+read from `text files` or the `envvars`.
 
 However, your Python code may expect some other value type, for example:
 
@@ -280,7 +289,7 @@ Let's see some examples for the above mentioned cases:
 As you can see, `cast` is very flexible. But the last example got a bit complex.
 
 Built in Csv Helper
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 To address the complexity of the last example, *Decouple* comes with an extensible *Csv helper*.
 
@@ -306,12 +315,39 @@ You can also parametrize the *Csv Helper* to return other types of data.
     >>> csv(os.environ['COMPLEX_STRING'])
     ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES']
 
+Contribute
+==========
+
+Your contribution is welcome.
+
+Setup you development environment:
+
+.. code-block:: console
+
+    git clone git@github.com:henriquebastos/python-decouple.git
+    cd python-decouple
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    tox
+
+*Decouple* supports both Python 2.7 and 3.6. Make sure you have both installed.
+
+I use `pyenv <https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_ to
+manage multiple Python versions and I described my workspace setup on this article:
+`The definitive guide to setup my Python workspace
+<https://medium.com/@henriquebastos/the-definitive-guide-to-setup-my-python-workspace-628d68552e14>`_
+
+You can submit pull requests and issues for discussion. However I only
+consider merge tested code.
+
+
 License
 =======
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Henrique Bastos <henrique at bastos dot net>
+Copyright (c) 2017 Henrique Bastos <henrique at bastos dot net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
