@@ -35,6 +35,8 @@ def config():
 
 
 def test_json_bool_true(config):
+    print(config('KeyTrue', cast=bool))
+    
     assert config('KeyTrue', cast=bool)
     assert config('KeyOne', cast=bool)
 

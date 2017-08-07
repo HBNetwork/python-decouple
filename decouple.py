@@ -99,6 +99,28 @@ class RepositoryEmpty(object):
         return None
 
 
+class RepositoryJSON(RepositoryEmpty):
+
+    def __init__(self, source):
+        self.parser = json.load(open(source))
+
+    def __contains__(self, key):
+        return (key in os.environ or
+                key in self.parser)
+
+    def __getitem__(self, key):
+        params = {}
+        params.update(os.environ)
+        params.update(self.parser)
+
+        value = (os.environ.get(key) or self.parser[key])
+
+        if isinstance(value, str):
+            return value % params
+        else:
+            return value
+
+
 class RepositoryIni(RepositoryEmpty):
     """
     Retrieves option keys from .ini files.
@@ -118,33 +140,7 @@ class RepositoryIni(RepositoryEmpty):
         return self.parser.get(self.SECTION, key)
 
 
-<<<<<<< HEAD
-class RepositoryJSON(RepositoryBase):
-
-    def __init__(self, source):
-        self.parser = json.load(open(source))
-
-    def __contains__(self, key):
-        return (key in os.environ or
-                key in self.parser)
-
-    def get(self, key):
-        params = {}
-        params.update(os.environ)
-        params.update(self.parser)
-
-        value = (os.environ.get(key) or self.parser[key])
-
-        if isinstance(value, str):
-            return value % params
-        else:
-            return value
-
-
-class RepositoryEnv(RepositoryBase):
-=======
 class RepositoryEnv(RepositoryEmpty):
->>>>>>> e842af614e6840d6a92f0ebc9852bc0099c08851
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
