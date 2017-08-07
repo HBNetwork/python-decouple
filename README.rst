@@ -26,8 +26,13 @@ for separating settings from code.
     :target: https://pypi.python.org/pypi/python-decouple/
     :alt: Latest PyPI version
 
+
+
+.. contents::
+
+
 Why?
-----
+====
 
 Web framework's settings stores many different kinds of parameters:
 
@@ -42,7 +47,7 @@ The first 2 are *project settings* the last 3 are *instance settings*.
 You should be able to change *instance settings* without redeploying your app.
 
 Why not just use environment variables?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 
 *Envvars* works, but since ``os.environ`` only returns strings, it's tricky.
 
@@ -61,7 +66,7 @@ Since it's a non-empty string, it will be evaluated as True.
 *Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
 
 Usage
------
+=====
 
 Install:
 
