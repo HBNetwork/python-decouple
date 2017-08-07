@@ -28,7 +28,7 @@ for separating settings from code.
 
 
 
-.. contents::
+.. contents:: Summary
 
 
 Why?
