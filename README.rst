@@ -6,7 +6,7 @@ change parameters without having to redeploy your app.
 
 It also makes easy for you to:
 
-#. store parameters on *ini* or *.env* files;
+#. store parameters on *ini*, *json* or *.env* files;
 #. define comprehensive default values;
 #. properly convert values to the correct data type;
 #. have **only one** configuration module to rule all your instances.
@@ -123,6 +123,22 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%
     #COMMENTED=42
+
+
+JSON file
+~~~~~~~~
+
+Simply create a ``settings.json`` JSON file on your repository's root directory in the form:
+
+.. code-block:: application/json
+
+    {
+      "DEBUG": true
+      "TEMPLATE_DEBUG": true
+      "SECRET_KEY": "ARANDOMSECRETKEY"
+      "DATABASE_URL": "mysql://myuser:mypassword@myhost/mydatabase"
+      "PERCENTILE": "90%"
+    }
 
 Example: How do I use it with Django?
 -------------------------------------
