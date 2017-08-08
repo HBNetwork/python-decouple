@@ -2,6 +2,9 @@
 import os
 import sys
 import string
+import json
+import copy
+
 from shlex import shlex
 
 
@@ -96,6 +99,28 @@ class RepositoryEmpty(object):
         return None
 
 
+class RepositoryJSON(RepositoryEmpty):
+
+    def __init__(self, source):
+        self.parser = json.load(open(source))
+
+    def __contains__(self, key):
+        return (key in os.environ or
+                key in self.parser)
+
+    def __getitem__(self, key):
+        params = {}
+        params.update(os.environ)
+        params.update(self.parser)
+
+        value = (os.environ.get(key) or self.parser[key])
+
+        if isinstance(value, str):
+            return value % params
+        else:
+            return value
+
+
 class RepositoryIni(RepositoryEmpty):
     """
     Retrieves option keys from .ini files.
@@ -151,6 +176,7 @@ class AutoConfig(object):
 
     """
     SUPPORTED = {
+        'settings.json': RepositoryJSON,
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
     }
@@ -230,4 +256,4 @@ class Csv(object):
         splitter.whitespace = self.delimiter
         splitter.whitespace_split = True
 
-        return self.post_process(transform(s) for s in splitter)
+        return [transform(s) for s in splitter]
