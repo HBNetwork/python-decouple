@@ -272,7 +272,7 @@ Let's see some examples for the above mentioned cases:
     ['.localhost', '.herokuapp.com']
 
     >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
-    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(tuple_=True))
+    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))
     ('HTTP_X_FORWARDED_PROTO', 'https')
 
 As you can see, `cast` is very flexible. But the last example got a bit complex.
