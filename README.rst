@@ -241,17 +241,17 @@ on the first time it is used.
 Understanding the CAST argument
 -------------------------------
 
-By default, all values returned by `decouple` are `strings`, after all they are
-read from `text files` or the `envvars`.
+By default, all values returned by ``decouple`` are ``strings``, after all they are
+read from ``text files`` or the ``envvars``.
 
 However, your Python code may expect some other value type, for example:
 
-* Django's DEBUG expects a boolean True or False.
-* Django's EMAIL_PORT expects an integer.
-* Django's ALLOWED_HOSTS expects a list of hostnames.
-* Django's SECURE_PROXY_SSL_HEADER expects a `tuple` with two elements, the name of the header to look for and the required value.
+* Django's ``DEBUG`` expects a boolean ``True`` or ``False``.
+* Django's ``EMAIL_PORT`` expects an ``integer``.
+* Django's ``ALLOWED_HOSTS`` expects a ``list`` of hostnames.
+* Django's ``SECURE_PROXY_SSL_HEADER`` expects a ``tuple`` with two elements, the name of the header to look for and the required value.
 
-To meet this need, the `config` function accepts a `cast` argument which
+To meet this need, the ``config`` function accepts a ``cast`` argument which
 receives any *callable*, that will be used to *transform* the string value
 into something else.
 
@@ -272,10 +272,10 @@ Let's see some examples for the above mentioned cases:
     ['.localhost', '.herokuapp.com']
 
     >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
-    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(tuple_=True))
+    >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))
     ('HTTP_X_FORWARDED_PROTO', 'https')
 
-As you can see, `cast` is very flexible. But the last example got a bit complex.
+As you can see, ``cast`` is very flexible. But the last example got a bit complex.
 
 Built in Csv Helper
 ~~~~~~~~~~~~~~~~~~~
@@ -304,7 +304,7 @@ You can also parametrize the *Csv Helper* to return other types of data.
     >>> csv(os.environ['COMPLEX_STRING'])
     ['VIRTUAL_ENV', 'IMPORTANT STUFF', 'TRAILING SPACES']
 
-By default *Csv* returns a `list`, but you can get a `tuple` or whatever you want using the `post_process` argument:
+By default *Csv* returns a ``list``, but you can get a ``tuple`` or whatever you want using the ``post_process`` argument:
 
 .. code-block:: pycon
 
