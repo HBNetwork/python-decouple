@@ -186,7 +186,7 @@ Overriding config files with environment variables
 
 Some times you may want to change a parameter value without having to edit the ``.ini`` or ``.env`` files.
 
-Since version 3.0, *decouple* respect the *unix way*.
+Since version 3.0, *decouple* respects the *unix way*.
 Therefore environment variables have precedence over config files.
 
 To override a config parameter you can simply do:
