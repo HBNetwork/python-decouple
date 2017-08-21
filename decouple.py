@@ -3,7 +3,7 @@ import os
 import sys
 import string
 from shlex import shlex
-from yaml import load
+from yaml import load as yaml_load
 
 
 # Useful for very coarse version differentiation.
@@ -142,12 +142,12 @@ class RepositoryEnv(RepositoryEmpty):
 
 class RepositoryYaml(RepositoryEmpty):
     """
-    Retrieves option keys from .ini files.
+    Retrieves option keys from .yaml files.
     """
     SECTION = 'settings'
 
     def __init__(self, source):
-        self.parse = load
+        self.parse = yaml_load
         with open(source) as file_:
             self.data = self.parse(file_)
 
