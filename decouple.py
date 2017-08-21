@@ -3,6 +3,7 @@ import os
 import sys
 import string
 from shlex import shlex
+from yaml import load
 
 
 # Useful for very coarse version differentiation.
@@ -139,6 +140,25 @@ class RepositoryEnv(RepositoryEmpty):
         return self.data[key]
 
 
+class RepositoryYaml(RepositoryEmpty):
+    """
+    Retrieves option keys from .ini files.
+    """
+    SECTION = 'settings'
+
+    def __init__(self, source):
+        self.parse = load
+        with open(source) as file_:
+            self.data = self.parse(file_)
+
+    def __contains__(self, key):
+        return (key in os.environ or
+                key in self.data[self.SECTION])
+
+    def __getitem__(self, key):
+        return self.data[self.SECTION].get(key)
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
@@ -153,6 +173,7 @@ class AutoConfig(object):
     SUPPORTED = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
+        'settings.yaml': RepositoryYaml
     }
 
     def __init__(self, search_path=None):
