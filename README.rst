@@ -4,9 +4,9 @@ Python Decouple: Strict separation of settings from code
 *Decouple* helps you to organize your settings so that you can
 change parameters without having to redeploy your app.
 
-It also makes easy for you to:
+It also makes it easy for you to:
 
-#. store parameters on *ini* or *.env* files;
+#. store parameters in *ini* or *.env* files;
 #. define comprehensive default values;
 #. properly convert values to the correct data type;
 #. have **only one** configuration module to rule all your instances.
@@ -177,14 +177,14 @@ Attention with *undefined* parameters
 On the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
 have a default value to fallback if it does not exist on the ``.env`` file.
 
-If ``SECRET_KEY`` is not present on the ``.env``, *decouple* will raise an ``UndefinedValueError``.
+If ``SECRET_KEY`` is not present in the ``.env``, *decouple* will raise an ``UndefinedValueError``.
 
 This *fail fast* policy helps you avoid chasing misbehaviors when you eventually forget a parameter.
 
 Overriding config files with environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Some times you may want to change a parameter value without having to edit the ``.ini`` or ``.env`` files.
+Sometimes you may want to change a parameter value without having to edit the ``.ini`` or ``.env`` files.
 
 Since version 3.0, *decouple* respects the *unix way*.
 Therefore environment variables have precedence over config files.
@@ -318,7 +318,7 @@ Contribute
 
 Your contribution is welcome.
 
-Setup you development environment:
+Setup your development environment:
 
 .. code-block:: console
 
@@ -337,7 +337,7 @@ manage multiple Python versions and I described my workspace setup on this artic
 <https://medium.com/@henriquebastos/the-definitive-guide-to-setup-my-python-workspace-628d68552e14>`_
 
 You can submit pull requests and issues for discussion. However I only
-consider merge tested code.
+consider merging tested code.
 
 
 License
