@@ -84,6 +84,9 @@ class Config(object):
         """
         return self.get(*args, **kwargs)
 
+    def items(self):
+        return self.repository.items()
+
 
 class RepositoryEmpty(object):
     def __init__(self, source=''):
@@ -94,6 +97,9 @@ class RepositoryEmpty(object):
 
     def __getitem__(self, key):
         return None
+
+    def items(self):
+        return ()
 
 
 class RepositoryIni(RepositoryEmpty):
@@ -113,6 +119,9 @@ class RepositoryIni(RepositoryEmpty):
 
     def __getitem__(self, key):
         return self.parser.get(self.SECTION, key)
+
+    def items(self):
+        return tuple(self.parser.items(self.SECTION))
 
 
 class RepositoryEnv(RepositoryEmpty):
@@ -137,6 +146,9 @@ class RepositoryEnv(RepositoryEmpty):
 
     def __getitem__(self, key):
         return self.data[key]
+
+    def items(self):
+        return tuple((k, v) for k, v in self.data.items())
 
 
 class AutoConfig(object):
