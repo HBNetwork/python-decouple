@@ -110,6 +110,7 @@ class RepositoryIni(RepositoryEmpty):
 
     def __init__(self, source):
         self.parser = ConfigParser()
+        self.parser.optionxform = str
         with open(source) as file_:
             self.parser.readfp(file_)
 
