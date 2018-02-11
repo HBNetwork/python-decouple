@@ -103,3 +103,7 @@ def test_env_support_space(config):
 
 def test_env_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
+
+def test_items_to_dict(config):
+    assert dict(config.items())['IgnoreSpace'] == 'text'
+    assert dict(config.items())['KeyEmpty'] is ''
