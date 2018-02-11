@@ -121,7 +121,7 @@ class RepositoryIni(RepositoryEmpty):
         return self.parser.get(self.SECTION, key)
 
     def items(self):
-        return tuple(self.parser.items(self.SECTION))
+        return self.parser.items(self.SECTION)
 
 
 class RepositoryEnv(RepositoryEmpty):
@@ -148,7 +148,7 @@ class RepositoryEnv(RepositoryEmpty):
         return self.data[key]
 
     def items(self):
-        return tuple((k, v) for k, v in self.data.items())
+        return self.data.items()
 
 
 class AutoConfig(object):
