@@ -41,7 +41,6 @@ def test_autoconfig_ini_in_subdir():
 def test_autoconfig_none():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
-    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'none')
     with patch('os.path.isfile', return_value=False):
         assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
@@ -61,6 +60,26 @@ def test_autoconfig_is_not_a_file():
     with patch('os.path.isfile', return_value=False):
         assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
+
+
+def test_env_os_environ():
+    os.environ['KeyOverrideByEnv'] = 'This'
+    config = AutoConfig()
+    assert 'This' == config('KeyOverrideByEnv')
+    del os.environ['KeyOverrideByEnv']
+
+
+def test_env_undefined_but_present_in_os_environ():
+    os.environ['KeyOnlyEnviron'] = ''
+    config = AutoConfig()
+    assert '' == config('KeyOnlyEnviron')
+    del os.environ['KeyOnlyEnviron']
+
+
+def test_env_undefined():
+    config = AutoConfig()
+    with pytest.raises(UndefinedValueError):
+        config('UndefinedKey')
 
 
 def test_autoconfig_search_path():

@@ -2,7 +2,7 @@
 import sys
 from mock import patch
 import pytest
-from decouple import Config, RepositoryEnv, UndefinedValueError
+from decouple import Config, RepositoryJSON, UndefinedValueError
 
 
 # Useful for very coarse version differentiation.
@@ -14,75 +14,76 @@ else:
     from io import BytesIO as StringIO
 
 
-ENVFILE = '''
-KeyTrue=True
-KeyOne=1
-KeyYes=yes
-KeyOn=on
+JSONFILE = '''
+{
+    "KeyTrue":true,
+    "KeyOne":1,
+    "KeyYes":"yes",
+    "KeyOn":"on",
 
-KeyFalse=False
-KeyZero=0
-KeyNo=no
-KeyOff=off
-KeyEmpty=
+    "KeyFalse":false,
+    "KeyZero":0,
+    "KeyNo":"no",
+    "KeyOff":"off",
+    "KeyEmpty":"",
 
-#CommentedKey=None
-PercentNotEscaped=%%
-NoInterpolation=%(KeyOff)s
-IgnoreSpace = text
-RespectSingleQuoteSpace = ' text'
-RespectDoubleQuoteSpace = " text"
-KeyOverrideByEnv=NotThis
+    "PercentNotEscaped":"%%",
+    "NoInterpolation":"%(KeyOff)s",
+    "IgnoreSpace" : "text",
+    "RespectDoubleQuoteSpace" : " text",
+    "KeyOverrideByEnv":"NotThis"
+}
 '''
+
 
 @pytest.fixture(scope='module')
 def config():
-    with patch('decouple.open', return_value=StringIO(ENVFILE), create=True):
+    with patch('decouple.open', return_value=StringIO(JSONFILE), create=True):
         with patch('decouple.os.path.isfile', return_value=True):
-            return Config(RepositoryEnv('.env'))
+            return Config(RepositoryJSON('settings.json'))
 
 
-def test_env_comment(config):
+def test_json_comment(config):
     with pytest.raises(UndefinedValueError):
         config('CommentedKey')
 
 
-def test_env_percent_not_escaped(config):
+def test_json_percent_not_escaped(config):
     assert '%%' == config('PercentNotEscaped')
 
 
-def test_env_no_interpolation(config):
+def test_json_no_interpolation(config):
     assert '%(KeyOff)s' == config('NoInterpolation')
 
 
-def test_env_bool_true(config):
+def test_json_bool_true(config):
     assert True is config('KeyTrue', cast=bool)
     assert True is config('KeyOne', cast=bool)
     assert True is config('KeyYes', cast=bool)
     assert True is config('KeyOn', cast=bool)
 
 
-def test_env_bool_false(config):
+def test_json_bool_false(config):
     assert False is config('KeyFalse', cast=bool)
     assert False is config('KeyZero', cast=bool)
     assert False is config('KeyNo', cast=bool)
     assert False is config('KeyOff', cast=bool)
 
 
-def test_env_default_none(config):
+def test_json_default_none(config):
     assert None is config('UndefinedKey', default=None)
 
 
-def test_env_empty(config):
+def test_json_empty(config):
     assert '' == config('KeyEmpty', default=None)
     assert '' == config('KeyEmpty')
 
 
-def test_env_support_space(config):
+def test_json_support_space(config):
     assert 'text' == config('IgnoreSpace')
-    assert ' text' == config('RespectSingleQuoteSpace')
+    # assert ' text' == config('RespectSingleQuoteSpace')
     assert ' text' == config('RespectDoubleQuoteSpace')
 
 
-def test_env_empty_string_means_false(config):
+def test_json_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)

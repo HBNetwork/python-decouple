@@ -1,7 +1,6 @@
 # coding: utf-8
-import os
 import sys
-from mock import patch, mock_open
+from mock import patch
 import pytest
 from decouple import Config, RepositoryIni, UndefinedValueError
 
@@ -38,7 +37,8 @@ KeyOverrideByEnv=NotThis
 @pytest.fixture(scope='module')
 def config():
     with patch('decouple.open', return_value=StringIO(INIFILE), create=True):
-        return Config(RepositoryIni('settings.ini'))
+        with patch('decouple.os.path.isfile', return_value=True):
+            return Config(RepositoryIni('settings.ini'))
 
 
 def test_ini_comment(config):
@@ -98,18 +98,6 @@ def test_ini_empty(config):
 
 def test_ini_support_space(config):
     assert 'text' == config('IgnoreSpace')
-
-
-def test_ini_os_environ(config):
-    os.environ['KeyOverrideByEnv'] = 'This'
-    assert 'This' == config('KeyOverrideByEnv')
-    del os.environ['KeyOverrideByEnv']
-
-
-def test_ini_undefined_but_present_in_os_environ(config):
-    os.environ['KeyOnlyEnviron'] = ''
-    assert '' == config('KeyOnlyEnviron')
-    del os.environ['KeyOnlyEnviron']
 
 
 def test_ini_empty_string_means_false(config):
