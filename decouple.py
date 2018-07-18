@@ -132,7 +132,7 @@ class RepositoryOS(RepositoryEmpty):
 
 class RepositoryIni(RepositoryEmpty):
     """
-    Retrieves option keys from .ini files.
+    Retrieves option keys from a .ini file.
     """
     SECTION = 'settings'
 
@@ -157,7 +157,7 @@ class RepositoryIni(RepositoryEmpty):
 
 class RepositoryEnv(RepositoryEmpty):
     """
-    Retrieves option keys from .env files
+    Retrieves option keys from a .env file.
     """
     def __init__(self, source):
         self.data = {}
@@ -187,15 +187,24 @@ class RepositoryEnv(RepositoryEmpty):
 
 class RepositoryPython(RepositoryEmpty):
     """
-    Retrieves option keys from .py files.
+    Retrieves option keys from a python module.
+    All globals not beginning with '_' are treated as option keys.
+
     It's up to the caller to make sure that the 
     specified file is on the PYTHON_PATH.
+
+    This type of repository has these advantages:
+    1) Casting is unnecessary, since the settings have a type.
+    2) Settings can be structured types like lists or dicts.
+    And these disadvantages:
+    1) A single error in the file will prevent the whole file from loading.
+    2) It must be importable by python
+       (among other things, this means it must be on the PYTHON_PATH).
     """
     def __init__(self, source):
         self.data = {}
 
         # Build python module name from directory names and file name minus extension
-        #TODO: handle if this is an absolute path, or if the module is not on the PYTHON_PATH
         dir_name = os.path.dirname(source).replace('\\', '/')
         file_name, file_extension = os.path.basename(source).split('.')
         module_parts = dir_name.split('/') if dir_name else []
@@ -224,7 +233,16 @@ class RepositoryPython(RepositoryEmpty):
 
 class RepositoryJSON(RepositoryEmpty):
     """
-    Retrieves option keys from JSON files (assumed to define a python dict when loaded)
+    Retrieves option keys from a JSON file.
+    The file, when loaded, is assumed to return a python dict,
+    the keys of which are used as option keys.
+
+    This type of repository has these advantages:
+    1) Casting is unnecessary, since the settings have a type.
+    2) Settings can be structured types like lists or dicts.
+    And these disadvantages:
+    1) A single error in the file will prevent the whole file from loading.
+    2) It's trickier than any of the other formats to edit manually.
     """
     def __init__(self, source):
         if not os.path.isfile(source):
@@ -246,7 +264,7 @@ class RepositoryJSON(RepositoryEmpty):
         return self.data
 
 
-class RepositoryDict(RepositoryEnv):
+class RepositoryDict(RepositoryEmpty):
     def __init__(self):
         self.data = {}
 
@@ -263,9 +281,16 @@ class RepositoryDict(RepositoryEnv):
         return self.data
 
 
+# NOTE: .ini files are intentionally omitted.
+# They don't mix well with the other formats because,
+# unlike the other formats, they use case-insensitive keys.
+# If you want to use them anyway, simply add them youself,
+# e.g. like this:
+# import decouple
+# config = decouple.MultiConfig(...)
+# config.supported_extensions['ini'] = decouple.RepositoryIni
 SUPPORTED_EXTENSIONS = {
     'os': RepositoryOS,
-    'ini': RepositoryIni,
     'env': RepositoryEnv,
     'py': RepositoryPython,
     'json': RepositoryJSON,
@@ -288,24 +313,17 @@ class AutoConfig(object):
         '.env': RepositoryEnv,
     }
 
-    def __init__(self, search_path=None, supported_files=None):
+    def __init__(self, search_path=None):
         self.search_path = search_path
         self.environ_config = Config(RepositoryOS())
         self.config = None
-        self._supported_files = supported_files
 
     def _find_file(self, path):
         # look for all files in the current path
-        if self._supported_files:
-            for configfile in self._supported_files:
-                filename = os.path.join(path, configfile)
-                if os.path.isfile(filename):
-                    return filename
-        else:
-            for configfile in self.SUPPORTED:
-                filename = os.path.join(path, configfile)
-                if os.path.isfile(filename):
-                    return filename
+        for configfile in self.SUPPORTED:
+            filename = os.path.join(path, configfile)
+            if os.path.isfile(filename):
+                return filename
 
         # search the parent
         parent = os.path.dirname(path)
@@ -321,16 +339,7 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        if self._supported_files:
-            if '.' in filename:
-                file_extension = filename.split('.')[-1]
-            else:
-                raise UnsupportedExtensionError('Config file {} has no extension'.format(filename))
-            Repository = SUPPORTED_EXTENSIONS.get(file_extension, None)
-            if Repository is None:
-                raise UnsupportedExtensionError('Config file {} has unsupported extension .{}'.format(filename, file_extension))
-        else:
-            Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
+        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
 
         self.config = Config(Repository(filename))
 
@@ -353,58 +362,72 @@ class AutoConfig(object):
 class MultiConfig(object):
     """
     Loads settings from multiple config files.
+    This allows settings of different types to be separated into different files.
     Settings in earlier files override settings in later files.
 
-    Note that MulticConfig does not check os environment unless '.os'
+    For python files, the caller is responsible for ensuring that the
+    file is accessible from the PYTHON_PATH.
+    
+    For other files, the caller should pass either a relative path that
+    is accessible from the current directory, or a full path.
+
+    Note that MulticConfig does not check os environment variables unless '.os'
     is included in the list of config 'files'. Its precedence is
     specified by its position in the list, just as for other configs.
 
     Parameters
     ----------
-    List of config files
+    Config file names
 
+    Example
+    -------
+    config = MultiConfig('.os', 'envs/config.py', 'envs/secrets.env')
+    # This will look for settings:
+    # 1) First in an environment variable ('.os')
+    # 2) Then in the python module env.config (for general settings)
+    # 3) Then in the file envs/secrets.env (for passwords, etc.)
+
+    More complex example
+    -------------------
+    config = MultiConfig('.os', 'envs/site.env')
+    SITE_TYPE = config('SITE_TYPE')
+    config = MultiConfig('.os', 'envs/site.env', 'config_{}.py'.format(SITE_TYPE), 'envs/secrets.env')
+    # This first determines the site type (e.g. 'production', 'staging', 'development')
+    # from an environment variable or the config file envs/site.env.
+    # It then loads an additional config file based on that site type.
+    # Mostly likely, the config file based on the site type would be under
+    # source control, while site.env and secrets.env would not be.
     """
 
-    # TODO: add search_path parameter like AutoConfig has?
     def __init__(self, *args):
         super(MultiConfig, self).__init__()
         self._env_files = args
         self._configs = None
+        self.combine_settings = True
+        self.supported_extensions = SUPPORTED_EXTENSIONS.copy()
     
-    def _load(self, path):
-        import os.path
+    def _load(self):
         repositories = []
         for config_file in self._env_files:
-            file_name = os.path.join(path, config_file)
-            if '.' in config_file:
-                file_extension = config_file.split('.')[-1]
-            else:
-                raise UnsupportedExtensionError('Config file {} has no extension'.format(config_file))
-            RepositoryType = SUPPORTED_EXTENSIONS.get(file_extension, None)
+            file_extension = config_file.split('.')[-1]
+            RepositoryType = self.supported_extensions.get(file_extension, None)
             if RepositoryType is None:
                 raise UnsupportedExtensionError('Config file {} has unsupported extension .{}'.format(config_file, file_extension))
-            repository = RepositoryType(file_name)
+            repository = RepositoryType(config_file)
             repositories.append(repository)
         
-        # TODO: add option to suppress combining repositories
-        # TODO: trigger it automatically if one is an .ini file, because those use case-insenstive keys
-        repositories.reverse()
-        combined_repository = RepositoryDict()
-        for repository in repositories:
-            combined_repository.update(repository.dict())
-        repositories = [combined_repository]
+        if self.combine_settings:
+            repositories.reverse()
+            combined_repository = RepositoryDict()
+            for repository in repositories:
+                combined_repository.update(repository.dict())
+            repositories = [combined_repository]
 
         self._configs = [Config(repository) for repository in repositories]
-        
-    def _caller_path(self):
-        # MAGIC! Get the caller's module path.
-        frame = sys._getframe()
-        path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
-        return path
 
     def __call__(self, option, *args, **kwargs):
         if self._configs is None:
-            self._load(self._caller_path())
+            self._load()
 
         for config in self._configs:
             try:
