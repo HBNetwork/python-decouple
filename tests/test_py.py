@@ -66,3 +66,11 @@ def test_python_empty_string_means_false(config):
 
 def test_python_none_means_false(config):
     assert False is config('KeyNone', cast=bool)
+
+
+def test_json_cast_not_required(config):
+    assert True is config('KeyBool')
+
+
+def test_json_cast_structured_type(config):
+    assert [1,2] == config('KeyList')

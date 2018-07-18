@@ -17,3 +17,6 @@ IgnoreSpace = 'text'
 RespectSingleQuoteSpace = ' text'
 RespectDoubleQuoteSpace = " text"
 KeyOverrideByEnv='NotThis'
+
+KeyBool = True
+KeyList = [1,2]

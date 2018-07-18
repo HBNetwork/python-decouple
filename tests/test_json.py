@@ -31,7 +31,10 @@ JSONFILE = '''
     "NoInterpolation":"%(KeyOff)s",
     "IgnoreSpace" : "text",
     "RespectDoubleQuoteSpace" : " text",
-    "KeyOverrideByEnv":"NotThis"
+    "KeyOverrideByEnv":"NotThis",
+
+    "KeyBool": true,
+    "KeyList": [1,2]
 }
 '''
 
@@ -87,3 +90,11 @@ def test_json_support_space(config):
 
 def test_json_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
+
+
+def test_json_cast_not_required(config):
+    assert True is config('KeyBool')
+
+
+def test_json_cast_structured_type(config):
+    assert [1,2] == config('KeyList')
