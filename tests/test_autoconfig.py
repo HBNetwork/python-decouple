@@ -4,6 +4,20 @@ import pytest
 from mock import patch
 from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty
 
+# Context handler for changing the current directory 
+# that makes sure it gets changed back again
+class ChangeDirectory(object):
+    def __init__(self, new_directory):
+        self._new_directory = new_directory
+        self._old_directory = os.getcwd()
+
+    def __enter__(self):
+        os.chdir(self._new_directory)
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.chdir(self._old_directory)
+
 
 def test_autoconfig_env():
     config = AutoConfig()
@@ -32,10 +46,10 @@ def test_autoconfig_ini_in_subdir():
     config = AutoConfig()
     subdir = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini',
             'project', 'subdir')
-    os.chdir(subdir)
-    path = os.path.join(os.path.curdir, 'empty.py')
-    with patch.object(config, '_caller_path', return_value=path):
-        assert 'INI' == config('KEY')
+    with ChangeDirectory(subdir):
+        path = os.path.join(os.path.curdir, 'empty.py')
+        with patch.object(config, '_caller_path', return_value=path):
+            assert 'INI' == config('KEY')
 
 
 def test_autoconfig_none():

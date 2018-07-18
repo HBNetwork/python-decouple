@@ -1,0 +1,2 @@
+PY_SETTING = 'py'
+SHARED_SETTING = 'py'
