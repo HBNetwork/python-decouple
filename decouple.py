@@ -102,6 +102,7 @@ class Config(object):
         return self.get(*args, **kwargs)
 
 
+# A Repository base class that acts like an empty repository
 class RepositoryEmpty(object):
     def __init__(self, source=''):
         pass
@@ -265,8 +266,8 @@ class RepositoryJSON(RepositoryEmpty):
 
 
 class RepositoryDict(RepositoryEmpty):
-    def __init__(self):
-        self.data = {}
+    def __init__(self, source=None):
+        self.data = source or dict()
 
     def update(self, dct):
         self.data.update(dct)
@@ -377,7 +378,7 @@ class MultiConfig(object):
 
     Parameters
     ----------
-    Config file names
+    Config file names OR pre-loaded repository objects
 
     Example
     -------
@@ -389,14 +390,16 @@ class MultiConfig(object):
 
     More complex example
     -------------------
+    defaults = {'default1':'value1', 'default2':'value2'}
     config = MultiConfig('.os', 'envs/site.env')
     SITE_TYPE = config('SITE_TYPE')
-    config = MultiConfig('.os', 'envs/site.env', 'config_{}.py'.format(SITE_TYPE), 'envs/secrets.env')
+    config = MultiConfig('.os', 'envs/site.env', 'config_{}.py'.format(SITE_TYPE), 'envs/secrets.env', RepositoryDict(defaults))
     # This first determines the site type (e.g. 'production', 'staging', 'development')
     # from an environment variable or the config file envs/site.env.
     # It then loads an additional config file based on that site type.
     # Mostly likely, the config file based on the site type would be under
     # source control, while site.env and secrets.env would not be.
+    # Note the use of a pre-loaded dictionary repository for defaults.
     """
 
     def __init__(self, *args):
@@ -409,11 +412,14 @@ class MultiConfig(object):
     def _load(self):
         repositories = []
         for config_file in self._env_files:
-            file_extension = config_file.split('.')[-1]
-            RepositoryType = self.supported_extensions.get(file_extension, None)
-            if RepositoryType is None:
-                raise UnsupportedExtensionError('Config file {} has unsupported extension .{}'.format(config_file, file_extension))
-            repository = RepositoryType(config_file)
+            if isinstance(config_file, RepositoryEmpty):
+                repository = config_file
+            else:
+                file_extension = config_file.split('.')[-1]
+                RepositoryType = self.supported_extensions.get(file_extension, None)
+                if RepositoryType is None:
+                    raise UnsupportedExtensionError('Config file {} has unsupported extension .{}'.format(config_file, file_extension))
+                repository = RepositoryType(config_file)
             repositories.append(repository)
         
         if self.combine_settings:
