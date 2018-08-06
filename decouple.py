@@ -197,6 +197,8 @@ class RepositoryPython(RepositoryEmpty):
     This type of repository has these advantages:
     1) Casting is unnecessary, since the settings have a type.
     2) Settings can be structured types like lists or dicts.
+    3) Settings files use all the same syntax and features
+       that Python programmers are used to.
     And these disadvantages:
     1) A single error in the file will prevent the whole file from loading.
     2) It must be importable by python
