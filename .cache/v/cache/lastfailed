@@ -1,7 +1,0 @@
-{
-  "tests/test_env.py::test_env_os_environ": true, 
-  "tests/test_env.py::test_env_undefined": true, 
-  "tests/test_env.py::test_env_undefined_but_present_in_os_environ": true, 
-  "tests/test_ini.py::test_ini_os_environ": true, 
-  "tests/test_ini.py::test_ini_undefined_but_present_in_os_environ": true
-}
