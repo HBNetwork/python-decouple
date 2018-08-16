@@ -41,7 +41,6 @@ def test_autoconfig_ini_in_subdir():
 def test_autoconfig_none():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
-    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'none')
     with patch('os.path.isfile', return_value=False):
         assert True is config('KeyFallback', cast=bool)
     del os.environ['KeyFallback']
