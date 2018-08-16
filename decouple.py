@@ -3,6 +3,7 @@ import locale
 import os
 import sys
 import string
+from io import open
 from shlex import shlex
 
 
