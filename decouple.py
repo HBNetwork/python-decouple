@@ -1,4 +1,5 @@
 # coding: utf-8
+import locale
 import os
 import sys
 import string
@@ -86,7 +87,7 @@ class Config(object):
 
 
 class RepositoryEmpty(object):
-    def __init__(self, source=''):
+    def __init__(self, source='', encoding=locale.getpreferredencoding(False)):
         pass
 
     def __contains__(self, key):
@@ -102,10 +103,10 @@ class RepositoryIni(RepositoryEmpty):
     """
     SECTION = 'settings'
 
-    def __init__(self, source):
+    def __init__(self, source, encoding):
         self.parser = ConfigParser()
-        with open(source) as file_:
-            self.parser.readfp(file_)
+        with open(source, encoding=encoding) as f:
+            self.parser.readfp(f)
 
     def __contains__(self, key):
         return (key in os.environ or
@@ -119,11 +120,11 @@ class RepositoryEnv(RepositoryEmpty):
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
-    def __init__(self, source):
+    def __init__(self, source, encoding):
         self.data = {}
 
-        with open(source) as file_:
-            for line in file_:
+        with open(source, encoding=encoding) as f:
+            for line in f:
                 line = line.strip()
                 if not line or line.startswith('#') or '=' not in line:
                     continue
@@ -174,15 +175,15 @@ class AutoConfig(object):
         # reached root without finding any files.
         return ''
 
-    def _load(self, path):
+    def _load(self, path, encoding):
         # Avoid unintended permission errors
         try:
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
+        repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
 
-        self.config = Config(Repository(filename))
+        self.config = Config(repository(filename, encoding))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.
@@ -191,8 +192,9 @@ class AutoConfig(object):
         return path
 
     def __call__(self, *args, **kwargs):
+        encoding = kwargs.pop('encoding', locale.getpreferredencoding(False))
         if not self.config:
-            self._load(self.search_path or self._caller_path())
+            self._load(self.search_path or self._caller_path(), encoding)
 
         return self.config(*args, **kwargs)
 
