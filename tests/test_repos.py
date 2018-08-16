@@ -142,14 +142,14 @@ def test_empty_string_means_false(configs):
 
 
 def test_utf8_value(configs):
-    assert_all_equals(configs, 'KeyUTF8', 'значение')
+    assert_all_equals(configs, 'KeyUTF8', u'значение')
 
 
 def test_another_encoding():
     encoding = 'cp1251'
     env_path, ini_path = write_files(encoding)
     configs = [Config(RepositoryEnv(env_path, encoding)), Config(RepositoryIni(ini_path, encoding))]
-    assert_all_equals(configs, 'KeyUTF8', 'значение')
+    assert_all_equals(configs, 'KeyUTF8', u'значение')
 
 
 def assert_all_equals(configs, key, expected, config_kwargs=None):
