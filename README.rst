@@ -92,6 +92,25 @@ Then use it on your ``settings.py``.
      EMAIL_HOST = config('EMAIL_HOST', default='localhost')
      EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 
+Encodings
+---------
+Decouple supports files with non-system default encoding.
+You can pass optional encoding kwarg to the first config call:
+
+.. code-block:: python
+
+    SECRET_KEY = config('SECRET_KEY', encoding='utf8')
+    DEBUG = config('DEBUG', default=False, cast=bool)
+    EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+    EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+
+And this encoding will be used to read file. The kwarg is mandatory only
+on the first call. If it isn't passed, open function fallbacks to
+
+.. code-block:: python
+
+    locale.getpreferredencoding(False)
+
 Where the settings data are stored?
 -----------------------------------
 
