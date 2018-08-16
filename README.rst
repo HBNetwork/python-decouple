@@ -325,7 +325,7 @@ Setup your development environment:
     git clone git@github.com:henriquebastos/python-decouple.git
     cd python-decouple
     python -m venv .venv
-    source .venv/bin/activate
+    source .venv/Scripts/activate
     pip install -r requirements.txt
     tox
 
