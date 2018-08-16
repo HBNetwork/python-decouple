@@ -6,7 +6,7 @@ import pytest
 
 from decouple import Config, RepositoryIni, UndefinedValueError, RepositoryEnv
 
-FILE = '''
+FILE = u'''
 [settings]
 KeyTrue=True
 KeyOne=1
