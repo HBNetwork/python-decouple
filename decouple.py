@@ -115,6 +115,34 @@ class RepositoryIni(RepositoryEmpty):
         return self.parser.get(self.SECTION, key)
 
 
+class RepositoryConsul(RepositoryEmpty):
+    """
+    Retrieves options keys from a consul connection.
+    """
+    def __init__(self, consul, root=''):
+        """
+        consul: consul.Consul object
+        root: Where to look for keys (prepended to the actual key name)
+        """
+        self.consul = consul
+        self.root = root
+        self.data = {}
+
+    def __contains__(self, key):
+        idx, data = self.consul.kv.get('/'.join([self.root, key]))
+        if not data:
+            return False
+        else:
+            self.data[key] = data.get('Value', None)
+            return True
+
+    def __getitem__(self, key):
+        # Makes sure that the data is loaded
+        if key in self:
+            return self.data[key]
+        return None
+
+
 class RepositoryEnv(RepositoryEmpty):
     """
     Retrieves option keys from .env files with fall back to os.environ.
