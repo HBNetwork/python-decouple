@@ -38,8 +38,9 @@ class Config(object):
     _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
                  '0': False, 'no': False, 'false': False, 'off': False, '': False}
 
-    def __init__(self, repository):
+    def __init__(self, repository, skip_env=False):
         self.repository = repository
+        self.skip_env = skip_env
 
     def _cast_boolean(self, value):
         """
@@ -55,13 +56,13 @@ class Config(object):
     def _cast_do_nothing(value):
         return value
 
-    def get(self, option, default=undefined, cast=undefined):
+    def get(self, option, default=undefined, cast=undefined, skip_env=False):
         """
         Return the value for option or default if defined.
         """
 
         # We can't avoid __contains__ because value may be empty.
-        if option in os.environ:
+        if not self.skip_env and not skip_env and option in os.environ:
             value = os.environ[option]
         elif option in self.repository:
             value = self.repository[option]
