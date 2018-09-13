@@ -106,6 +106,20 @@ def test_ini_os_environ(config):
     del os.environ['KeyOverrideByEnv']
 
 
+def test_skip_env_global(config):
+    config.skip_env = True
+    os.environ['KeyOverrideByEnv'] = 'This'
+    assert 'NotThis' == config('KeyOverrideByEnv')
+    del os.environ['KeyOverrideByEnv']
+    config.skip_env = False
+
+
+def test_skip_env_global(config):
+    os.environ['KeyOverrideByEnv'] = 'This'
+    assert 'NotThis' == config('KeyOverrideByEnv', skip_env=True)
+    del os.environ['KeyOverrideByEnv']
+
+
 def test_ini_undefined_but_present_in_os_environ(config):
     os.environ['KeyOnlyEnviron'] = ''
     assert '' == config('KeyOnlyEnviron')
