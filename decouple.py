@@ -150,18 +150,22 @@ class AutoConfig(object):
         caller's path.
 
     """
-    SUPPORTED = {
+    config_filenames = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
     }
 
-    def __init__(self, search_path=None):
+    def __init__(self, search_path=None, optional_config_filenames: list=[]):
+        if type(optional_config_filenames) is not list: optional_config_filenames = [optional_config_filenames]
         self.search_path = search_path
         self.config = None
+        for filename in optional_config_filenames:
+            self.config_filenames[filename] = RepositoryIni if filename.endswith(".ini") else RepositoryEnv
+            print(self.config_filenames)
 
     def _find_file(self, path):
         # look for all files in the current path
-        for configfile in self.SUPPORTED:
+        for configfile in self.config_filenames:
             filename = os.path.join(path, configfile)
             if os.path.isfile(filename):
                 return filename
@@ -180,7 +184,7 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
+        Repository = self.config_filenames.get(os.path.basename(filename), RepositoryEmpty)
 
         self.config = Config(Repository(filename))
 

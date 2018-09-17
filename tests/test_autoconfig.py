@@ -12,6 +12,22 @@ def test_autoconfig_env():
         assert 'ENV' == config('KEY')
 
 
+def test_autoconfig_env_with_named_file():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'no-default-files')
+    config = AutoConfig(path, optional_config_filenames=["named.env"])
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'NAMED_ENV_FILE' == config('KEY')
+
+
+def test_autoconfig_env_with_named_file_string():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'no-default-files')
+    config = AutoConfig(path, optional_config_filenames="named.env")
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
+    with patch.object(config, '_caller_path', return_value=path):
+        assert 'NAMED_ENV_FILE' == config('KEY')
+
+
 def test_autoconfig_ini():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'project')
