@@ -63,7 +63,7 @@ Let's say you have an *envvar* ``DEBUG=False``. If you run:
 It will print **True**, because ``os.environ['DEBUG']`` returns the **string** ``"False"``.
 Since it's a non-empty string, it will be evaluated as True.
 
-*Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
+*Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=strtobool)``.
 
 Usage
 =====
@@ -88,7 +88,7 @@ Then use it on your ``settings.py``.
    .. code-block:: python
 
      SECRET_KEY = config('SECRET_KEY')
-     DEBUG = config('DEBUG', default=False, cast=bool)
+     DEBUG = config('DEBUG', default=False, cast=strtobool)
      EMAIL_HOST = config('EMAIL_HOST', default='localhost')
      EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 
@@ -139,6 +139,7 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 .. code-block:: python
 
     # coding: utf-8
+    from distutils.util import strtobool
     from decouple import config
     from unipath import Path
     from dj_database_url import parse as db_url
@@ -146,7 +147,7 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     BASE_DIR = Path(__file__).parent
 
-    DEBUG = config('DEBUG', default=False, cast=bool)
+    DEBUG = config('DEBUG', default=False, cast=strtobool)
     TEMPLATE_DEBUG = DEBUG
 
     DATABASES = {
@@ -167,7 +168,7 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=strtobool)
 
     # ...
 
@@ -260,7 +261,7 @@ Let's see some examples for the above mentioned cases:
 .. code-block:: pycon
 
     >>> os.environ['DEBUG'] = 'False'
-    >>> config('DEBUG', cast=bool)
+    >>> config('DEBUG', cast=strtobool)
     False
 
     >>> os.environ['EMAIL_PORT'] = '42'

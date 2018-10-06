@@ -35,21 +35,8 @@ class Config(object):
     """
     Handle .env file format used by Foreman.
     """
-    _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
-                 '0': False, 'no': False, 'false': False, 'off': False, '': False}
-
     def __init__(self, repository):
         self.repository = repository
-
-    def _cast_boolean(self, value):
-        """
-        Helper to convert config values to boolean as ConfigParser do.
-        """
-        value = str(value)
-        if value.lower() not in self._BOOLEANS:
-            raise ValueError('Not a boolean: %s' % value)
-
-        return self._BOOLEANS[value.lower()]
 
     @staticmethod
     def _cast_do_nothing(value):
@@ -73,8 +60,6 @@ class Config(object):
 
         if isinstance(cast, Undefined):
             cast = self._cast_do_nothing
-        elif cast is bool:
-            cast = self._cast_boolean
 
         return cast(value)
 

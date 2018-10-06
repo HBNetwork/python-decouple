@@ -3,6 +3,7 @@ import os
 import pytest
 from mock import patch
 from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty
+from distutils.util strtobool
 
 
 def test_autoconfig_env():
@@ -43,7 +44,7 @@ def test_autoconfig_none():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'none')
     with patch('os.path.isfile', return_value=False):
-        assert True is config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=strtobool)
     del os.environ['KeyFallback']
 
 
@@ -51,7 +52,7 @@ def test_autoconfig_exception():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
     with patch('os.path.isfile', side_effect=Exception('PermissionDenied')):
-        assert True is config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=strtobool)
     del os.environ['KeyFallback']
 
 
@@ -59,7 +60,7 @@ def test_autoconfig_is_not_a_file():
     os.environ['KeyFallback'] = 'On'
     config = AutoConfig()
     with patch('os.path.isfile', return_value=False):
-        assert True is config('KeyFallback', cast=bool)
+        assert True is config('KeyFallback', cast=strtobool)
     del os.environ['KeyFallback']
 
 

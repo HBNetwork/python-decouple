@@ -4,6 +4,7 @@ import sys
 from mock import patch
 import pytest
 from decouple import Config, RepositoryEnv, UndefinedValueError
+from distutils.util strtobool
 
 
 # Useful for very coarse version differentiation.
@@ -56,17 +57,17 @@ def test_env_no_interpolation(config):
 
 
 def test_env_bool_true(config):
-    assert True is config('KeyTrue', cast=bool)
-    assert True is config('KeyOne', cast=bool)
-    assert True is config('KeyYes', cast=bool)
-    assert True is config('KeyOn', cast=bool)
+    assert True is config('KeyTrue', cast=strtobool)
+    assert True is config('KeyOne', cast=strtobool)
+    assert True is config('KeyYes', cast=strtobool)
+    assert True is config('KeyOn', cast=strtobool)
 
 
 def test_env_bool_false(config):
-    assert False is config('KeyFalse', cast=bool)
-    assert False is config('KeyZero', cast=bool)
-    assert False is config('KeyNo', cast=bool)
-    assert False is config('KeyOff', cast=bool)
+    assert False is config('KeyFalse', cast=strtobool)
+    assert False is config('KeyZero', cast=strtobool)
+    assert False is config('KeyNo', cast=strtobool)
+    assert False is config('KeyOff', cast=strtobool)
 
 
 def test_env_os_environ(config):
@@ -102,4 +103,4 @@ def test_env_support_space(config):
 
 
 def test_env_empty_string_means_false(config):
-    assert False is config('KeyEmpty', cast=bool)
+    assert False is config('KeyEmpty', cast=strtobool)

@@ -4,6 +4,8 @@ import sys
 from mock import patch, mock_open
 import pytest
 from decouple import Config, RepositoryIni, UndefinedValueError
+from distutils.util strtobool
+
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -55,17 +57,17 @@ def test_ini_interpolation(config):
 
 
 def test_ini_bool_true(config):
-    assert True is config('KeyTrue', cast=bool)
-    assert True is config('KeyOne', cast=bool)
-    assert True is config('KeyYes', cast=bool)
-    assert True is config('KeyOn', cast=bool)
+    assert True is config('KeyTrue', cast=strtobool)
+    assert True is config('KeyOne', cast=strtobool)
+    assert True is config('KeyYes', cast=strtobool)
+    assert True is config('KeyOn', cast=strtobool)
 
 
 def test_ini_bool_false(config):
-    assert False is config('KeyFalse', cast=bool)
-    assert False is config('KeyZero', cast=bool)
-    assert False is config('KeyNo', cast=bool)
-    assert False is config('KeyOff', cast=bool)
+    assert False is config('KeyFalse', cast=strtobool)
+    assert False is config('KeyZero', cast=strtobool)
+    assert False is config('KeyNo', cast=strtobool)
+    assert False is config('KeyOff', cast=strtobool)
 
 
 def test_init_undefined(config):
@@ -78,8 +80,8 @@ def test_ini_default_none(config):
 
 
 def test_ini_default_bool(config):
-    assert False is config('UndefinedKey', default=False, cast=bool)
-    assert True is config('UndefinedKey', default=True, cast=bool)
+    assert False is config('UndefinedKey', default=False, cast=strtobool)
+    assert True is config('UndefinedKey', default=True, cast=strtobool)
 
 
 def test_ini_default(config):
@@ -89,7 +91,7 @@ def test_ini_default(config):
 
 def test_ini_default_invalid_bool(config):
     with pytest.raises(ValueError):
-        config('UndefinedKey', default='NotBool', cast=bool)
+        config('UndefinedKey', default='NotBool', cast=strtobool)
 
 
 def test_ini_empty(config):
@@ -113,4 +115,4 @@ def test_ini_undefined_but_present_in_os_environ(config):
 
 
 def test_ini_empty_string_means_false(config):
-    assert False is config('KeyEmpty', cast=bool)
+    assert False is config('KeyEmpty', cast=strtobool)
