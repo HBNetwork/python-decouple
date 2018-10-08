@@ -149,15 +149,19 @@ class AutoConfig(object):
         Initial search path. If empty, the default search path is the
         caller's path.
 
+    parents : bool, optional
+        Allow search on all parent path of search_path. The default is True.
+
     """
     SUPPORTED = {
         'settings.ini': RepositoryIni,
         '.env': RepositoryEnv,
     }
 
-    def __init__(self, search_path=None):
+    def __init__(self, search_path=None, parents=True):
         self.search_path = search_path
         self.config = None
+        self.parents = parents
 
     def _find_file(self, path):
         # look for all files in the current path
@@ -167,9 +171,10 @@ class AutoConfig(object):
                 return filename
 
         # search the parent
-        parent = os.path.dirname(path)
-        if parent and parent != os.path.sep:
-            return self._find_file(parent)
+        if self.parents:
+            parent = os.path.dirname(path)
+            if parent and parent != os.path.sep:
+                return self._find_file(parent)
 
         # reached root without finding any files.
         return ''
