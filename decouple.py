@@ -120,12 +120,15 @@ class RepositoryConsul(RepositoryEmpty):
     """
     Retrieves options keys from a consul connection.
     """
-    def __init__(self, consul, root=''):
+    def __init__(self, consul, root='', encoding=None):
         """
         consul: consul.Consul object
         root: Where to look for keys (prepended to the actual key name)
+        encoding: Which encoding to be used when returning values. The value
+        will not be decoded if encoding is None
         """
         self.consul = consul
+        self.encoding = encoding
         self.root = root
         self.data = {}
 
@@ -140,7 +143,10 @@ class RepositoryConsul(RepositoryEmpty):
     def __getitem__(self, key):
         # Makes sure that the data is loaded
         if key in self:
-            return self.data[key]
+            value = self.data[key]
+            if self.encoding:
+                return value.decode(self.encoding)
+            return value
         return None
 
 

@@ -1,5 +1,7 @@
 # coding: utf-8
 import os
+import sys
+
 import pytest
 
 from decouple import Config, RepositoryConsul, UndefinedValueError
@@ -21,17 +23,25 @@ class FakeConsul(object):
 
 @pytest.fixture
 def consul():
-    c = FakeConsul()
-    c.fake_data['myapp/secret_key'] = 'some really secure secret key'
-    c.fake_data['myapp/debug'] = False
-    c.fake_data['staging/debug'] = True
-    c.fake_data['unaccessible'] = 'not be accessible if root is set to `myapp`'
+    PY3 = sys.version_info[0] == 3
+    if PY3:
+        c = FakeConsul()
+        c.fake_data['myapp/secret_key'] = b'some really secure secret key'
+        c.fake_data['myapp/debug'] = b'False'
+        c.fake_data['staging/debug'] = b'True'
+        c.fake_data['unaccessible'] = b'not be accessible if root is set to `myapp`'
+    else:
+        c = FakeConsul()
+        c.fake_data['myapp/secret_key'] = 'some really secure secret key'
+        c.fake_data['myapp/debug'] = 'False'
+        c.fake_data['staging/debug'] = 'True'
+        c.fake_data['unaccessible'] = 'not be accessible if root is set to `myapp`'
     return c
 
 
 @pytest.fixture
 def config(consul):
-    return Config(RepositoryConsul(consul, 'myapp'))
+    return Config(RepositoryConsul(consul, 'myapp', encoding='utf-8'))
 
 
 def test_consul_undefined(config):
@@ -49,3 +59,8 @@ def test_consul_basic(config):
     os.environ['unaccessible'] = 'overwrite'
     assert config('unaccessible') == 'overwrite'
     del os.environ['unaccessible']
+
+
+def test_consul_without_encoding(consul):
+    config = Config(RepositoryConsul(consul, 'staging'))
+    assert config('debug') == b'True' # It is not possible to cast bytes into boolean
