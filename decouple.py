@@ -20,6 +20,9 @@ class UndefinedValueError(Exception):
     pass
 
 
+class UnsupportedParser(Exception):
+    pass
+
 class Undefined(object):
     """
     Class to represent undefined type.
@@ -195,6 +198,39 @@ class AutoConfig(object):
             self._load(self.search_path or self._caller_path())
 
         return self.config(*args, **kwargs)
+
+
+class CustomConfig(AutoConfig):
+    """
+    Specify the config file and type.
+
+    Parameters
+    ----------
+    config_filename: str, required
+        The name of the config file to load.
+    repository_class: RepositoryEnv|RepositoryIni, required
+        Class name of the parser, related to the type of the file.
+    search_path : str, optional
+        Initial search path. If empty, the default search path is the
+        caller's path.
+    section: str, optional
+        For ini files, section name that should be loaded. The default is 
+        "settings".
+
+    """
+    def __init__(self, config_filename, repository_class, search_path=None,
+            section=None):
+
+        if repository_class not in [RepositoryEnv, RepositoryIni]:
+            raise UnsupportedParser("Unsupported Config Parser, should be : RepositoryEnv or RepositoryIni")
+        self.SUPPORTED = {
+            config_filename: repository_class
+        }
+
+        if section and repository_class == RepositoryIni:
+            repository_class.SECTION = section
+
+        super(CustomConfig, self).__init__(search_path)
 
 
 # A pré-instantiated AutoConfig to improve decouple's usability

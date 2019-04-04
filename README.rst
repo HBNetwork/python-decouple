@@ -195,6 +195,40 @@ To override a config parameter you can simply do:
 
     DEBUG=True python manage.py
 
+Custom Config files
+~~~~~~~~~~~~~~~~~~~
+
+If you want to use a custom configuration file, you can usee the ``CustomConfig`` class and pass it the file name and the parser.
+
+.. code-block:: python
+
+    # coding: utf-8
+
+    # Example for a custom .env file.
+    from decouple import CustomConfig, RepositoryEnv
+
+    config = CustomConfig('.env.production', RepositoryEnv)
+    DEBUG = config('DEBUG', default=False, cast=bool)
+
+
+    # ...
+
+For ``.ini`` settings you can override the section, by default the section is `settings`.
+
+.. code-block:: python
+
+    # coding: utf-8
+
+    # Example for a custom .ini file.
+    from decouple import CustomConfig, RepositoryIni
+
+    config = CustomConfig('production_settings.ini', RepositoryIni, section='uwsgi')
+    DEBUG = config('DEBUG', default=False, cast=bool)
+
+    # ...
+
+
+
 
 How it works?
 =============
