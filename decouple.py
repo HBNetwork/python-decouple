@@ -4,7 +4,7 @@ import sys
 import string
 from shlex import shlex
 from io import open
-
+from collections import OrderedDict
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -154,10 +154,10 @@ class AutoConfig(object):
         caller's path.
 
     """
-    SUPPORTED = {
-        'settings.ini': RepositoryIni,
-        '.env': RepositoryEnv,
-    }
+    SUPPORTED = OrderedDict([
+        ('settings.ini', RepositoryIni),
+        ('.env', RepositoryEnv),
+    ])
 
     encoding = DEFAULT_ENCODING
 
