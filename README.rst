@@ -315,6 +315,14 @@ Let's improve the last example:
     >>> config('ALLOWED_HOSTS', cast=Csv())
     ['.localhost', '.herokuapp.com']
 
+You can also have a `default` value that must be a string to be processed by `Csv`.
+
+.. code-block:: python
+
+    >>> from decouple import Csv
+    >>> config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
+    ['127.0.0.1']
+
 You can also parametrize the *Csv Helper* to return other types of data.
 
 .. code-block:: python
