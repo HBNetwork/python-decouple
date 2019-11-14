@@ -130,7 +130,7 @@ class RepositoryEnv(RepositoryEmpty):
                 k, v = line.split('=', 1)
                 k = k.strip()
                 v = v.strip()
-                if v and (v[0] == "'" and v[-1] == "'" or v[0] == '"' and v[-1] == '"'):
+                if len(v) >= 2 and ((v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"')):
                     v = v.strip('\'"')
                 self.data[k] = v
 
