@@ -34,6 +34,9 @@ IgnoreSpace = text
 RespectSingleQuoteSpace = ' text'
 RespectDoubleQuoteSpace = " text"
 KeyOverrideByEnv=NotThis
+
+KeyWithSingleQuote=text'
+KeyWithDoubleQuote=text"
 '''
 
 @pytest.fixture(scope='module')
@@ -103,3 +106,7 @@ def test_env_support_space(config):
 
 def test_env_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
+
+def test_env_with_quote(config):
+    assert "text'" == config('KeyWithSingleQuote')
+    assert 'text"' == config('KeyWithDoubleQuote')
