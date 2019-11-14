@@ -3,6 +3,7 @@ import os
 import sys
 import string
 from shlex import shlex
+from io import open
 
 
 # Useful for very coarse version differentiation.
@@ -15,6 +16,7 @@ else:
     from ConfigParser import SafeConfigParser as ConfigParser
     text_type = unicode
 
+DEFAULT_ENCODING = 'UTF-8'
 
 class UndefinedValueError(Exception):
     pass
@@ -86,7 +88,7 @@ class Config(object):
 
 
 class RepositoryEmpty(object):
-    def __init__(self, source=''):
+    def __init__(self, source='', encoding=DEFAULT_ENCODING):
         pass
 
     def __contains__(self, key):
@@ -102,9 +104,9 @@ class RepositoryIni(RepositoryEmpty):
     """
     SECTION = 'settings'
 
-    def __init__(self, source):
+    def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.parser = ConfigParser()
-        with open(source) as file_:
+        with open(source, encoding=encoding) as file_:
             self.parser.readfp(file_)
 
     def __contains__(self, key):
@@ -119,10 +121,10 @@ class RepositoryEnv(RepositoryEmpty):
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
-    def __init__(self, source):
+    def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.data = {}
 
-        with open(source) as file_:
+        with open(source, encoding=encoding) as file_:
             for line in file_:
                 line = line.strip()
                 if not line or line.startswith('#') or '=' not in line:
@@ -155,6 +157,8 @@ class AutoConfig(object):
         '.env': RepositoryEnv,
     }
 
+    encoding = DEFAULT_ENCODING
+
     def __init__(self, search_path=None):
         self.search_path = search_path
         self.config = None
@@ -182,7 +186,7 @@ class AutoConfig(object):
             filename = ''
         Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
 
-        self.config = Config(Repository(filename))
+        self.config = Config(Repository(filename, encoding=self.encoding))
 
     def _caller_path(self):
         # MAGIC! Get the caller's module path.

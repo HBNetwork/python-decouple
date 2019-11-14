@@ -92,6 +92,30 @@ Then use it on your ``settings.py``.
      EMAIL_HOST = config('EMAIL_HOST', default='localhost')
      EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 
+Encodings
+---------
+Decouple's default encoding is `UTF-8`.
+
+But you can specify your preferred encoding.
+
+Since `config` is lazy and only opens the configuration file when it's first needed, you have the chance to change
+it's encoding right after import.
+
+.. code-block:: python
+
+    from decouple import config
+    config.encoding = 'cp1251'
+    SECRET_KEY = config('SECRET_KEY')
+
+If you wish to fallback to your system's default encoding do:
+
+.. code-block:: python
+
+    import locale
+    from decouple import config
+    config.encoding = locale.getpreferredencoding(False)
+    SECRET_KEY = config('SECRET_KEY')
+
 Where the settings data are stored?
 -----------------------------------
 
