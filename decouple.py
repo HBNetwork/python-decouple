@@ -131,7 +131,9 @@ class RepositoryEnv(RepositoryEmpty):
                     continue
                 k, v = line.split('=', 1)
                 k = k.strip()
-                v = v.strip().strip('\'"')
+                v = v.strip()
+                if len(v) >= 2 and ((v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"')):
+                    v = v.strip('\'"')
                 self.data[k] = v
 
     def __contains__(self, key):
