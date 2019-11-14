@@ -281,7 +281,7 @@ into something else.
 
 Let's see some examples for the above mentioned cases:
 
-.. code-block:: pycon
+.. code-block:: python
 
     >>> os.environ['DEBUG'] = 'False'
     >>> config('DEBUG', cast=bool)
@@ -308,7 +308,7 @@ To address the complexity of the last example, *Decouple* comes with an extensib
 
 Let's improve the last example:
 
-.. code-block:: pycon
+.. code-block:: python
 
     >>> from decouple import Csv
     >>> os.environ['ALLOWED_HOSTS'] = '.localhost, .herokuapp.com'
@@ -317,7 +317,7 @@ Let's improve the last example:
 
 You can also parametrize the *Csv Helper* to return other types of data.
 
-.. code-block:: pycon
+.. code-block:: python
 
     >>> os.environ['LIST_OF_INTEGERS'] = '1,2,3,4,5'
     >>> config('LIST_OF_INTEGERS', cast=Csv(int))
@@ -330,7 +330,7 @@ You can also parametrize the *Csv Helper* to return other types of data.
 
 By default *Csv* returns a ``list``, but you can get a ``tuple`` or whatever you want using the ``post_process`` argument:
 
-.. code-block:: pycon
+.. code-block:: python
 
     >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
     >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))

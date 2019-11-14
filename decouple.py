@@ -221,7 +221,7 @@ class Csv(object):
         cast -- callable that transforms the item just before it's added to the list.
         delimiter -- string of delimiters chars passed to shlex.
         strip -- string of non-relevant characters to be passed to str.strip after the split.
-        tuple_ -- boolean to check if it is to return in tuple format.
+        post_process -- callable to post process all casted values. Default is `list`.
         """
         self.cast = cast
         self.delimiter = delimiter
