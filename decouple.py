@@ -5,6 +5,7 @@ import string
 from shlex import shlex
 from io import open
 from collections import OrderedDict
+from distutils.util import strtobool
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
@@ -37,8 +38,6 @@ class Config(object):
     """
     Handle .env file format used by Foreman.
     """
-    _BOOLEANS = {'1': True, 'yes': True, 'true': True, 'on': True,
-                 '0': False, 'no': False, 'false': False, 'off': False, '': False}
 
     def __init__(self, repository):
         self.repository = repository
@@ -48,10 +47,7 @@ class Config(object):
         Helper to convert config values to boolean as ConfigParser do.
         """
         value = str(value)
-        if value.lower() not in self._BOOLEANS:
-            raise ValueError('Not a boolean: %s' % value)
-
-        return self._BOOLEANS[value.lower()]
+        return bool(value) if value == '' else bool(strtobool(value))
 
     @staticmethod
     def _cast_do_nothing(value):
@@ -206,7 +202,6 @@ class AutoConfig(object):
 # A pré-instantiated AutoConfig to improve decouple's usability
 # now just import config and start using with no configuration.
 config = AutoConfig()
-
 
 # Helpers
 
