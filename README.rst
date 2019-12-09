@@ -370,9 +370,9 @@ You can also parametrize *Choices helper* to cast to another type:
     >>> config('SOME_NUMBER', cast=Choices([7, 14, 42], cast=int))
     42
 
-If can also use a Django-like choices tuple:
+You can also use a Django-like choices tuple:
 
-.. code-bloc:: python
+.. code-block:: python
 
     >>> USB = 'usb'
     >>> ETH = 'eth'
