@@ -203,7 +203,7 @@ have a default value to fallback if it does not exist on the ``.env`` file.
 
 If ``SECRET_KEY`` is not present in the ``.env``, *decouple* will raise an ``UndefinedValueError``.
 
-This *fail fast* policy helps you avoid chasing misbehaviors when you eventually forget a parameter.
+This *fail fast* policy helps you avoid chasing misbehaviours when you eventually forget a parameter.
 
 Overriding config files with environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
