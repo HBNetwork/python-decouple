@@ -232,3 +232,34 @@ class Csv(object):
         splitter.whitespace_split = True
 
         return self.post_process(transform(s) for s in splitter)
+
+
+class Choices(object):
+    """
+    Allows for cast and validation based on a list of choices.
+    """
+
+    def __init__(self, flat=None, cast=text_type, choices=None):
+        """
+        Parameters:
+        flat -- a flat list of valid choices.
+        cast -- callable that transforms value before validation.
+        choices -- tuple of Django-like choices.
+        """
+        self.flat = flat or []
+        self.cast = cast
+        self.choices = choices or []
+
+        self._valid_values = []
+        self._valid_values.extend(self.flat)
+        self._valid_values.extend([value for value, _ in self.choices])
+
+
+    def __call__(self, value):
+        transform = self.cast(value)
+        if transform not in self._valid_values:
+            raise ValueError((
+                    'Value not in list: {!r}; valid values are {!r}'
+                ).format(value, self._valid_values))
+        else:
+            return transform

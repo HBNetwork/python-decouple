@@ -344,6 +344,48 @@ By default *Csv* returns a ``list``, but you can get a ``tuple`` or whatever you
     >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))
     ('HTTP_X_FORWARDED_PROTO', 'https')
 
+Built in Choices helper
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Allows for cast and validation based on a list of choices. For example:
+
+.. code-block:: python
+
+    >>> from decouple import config, Choices
+    >>> os.environ['CONNECTION_TYPE'] = 'usb'
+    >>> config('CONNECTION_TYPE', cast=Choices(['eth', 'usb', 'bluetooth']))
+    'usb'
+
+    >>> os.environ['CONNECTION_TYPE'] = 'serial'
+    >>> config('CONNECTION_TYPE', cast=Choices(['eth', 'usb', 'bluetooth']))
+    Traceback (most recent call last):
+     ...
+    ValueError: Value not in list: 'serial'; valid values are ['eth', 'usb', 'bluetooth']
+
+You can also parametrize *Choices helper* to cast to another type:
+
+.. code-block:: python
+
+    >>> os.environ['SOME_NUMBER'] = '42'
+    >>> config('SOME_NUMBER', cast=Choices([7, 14, 42], cast=int))
+    42
+
+You can also use a Django-like choices tuple:
+
+.. code-block:: python
+
+    >>> USB = 'usb'
+    >>> ETH = 'eth'
+    >>> BLUETOOTH = 'bluetooth'
+    >>>
+    >>> CONNECTION_OPTIONS = (
+    ...        (USB, 'USB'),
+    ...        (ETH, 'Ethernet'),
+    ...        (BLUETOOTH, 'Bluetooth'),)
+    ...
+    >>> os.environ['CONNECTION_TYPE'] = BLUETOOTH
+    >>> config('CONNECTION_TYPE', cast=Choices(choices=CONNECTION_OPTIONS))
+    'bluetooth'
 
 Contribute
 ==========
