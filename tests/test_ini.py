@@ -100,7 +100,7 @@ def test_ini_default_invalid_bool(config):
 
 
 def test_ini_empty(config):
-    assert '' is config('KeyEmpty', default=None)
+    assert '' == config('KeyEmpty', default=None)
 
 
 def test_ini_support_space(config):
