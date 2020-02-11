@@ -103,7 +103,7 @@ class RepositoryIni(RepositoryEmpty):
     def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.parser = ConfigParser()
         with open(source, encoding=encoding) as file_:
-            self.parser.readfp(file_)
+            self.parser.read_file(file_)
 
     def __contains__(self, key):
         return (key in os.environ or
