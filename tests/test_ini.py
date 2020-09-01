@@ -94,12 +94,12 @@ def test_ini_default(config):
     assert True is config('UndefinedKey', default=True)
 
 
-def test_ini_default_invalid_bool(config):
+def test_ini_default_type_different_from_cast(config):
     assert 'NotBool' is config('UndefinedKey', default='NotBool', cast=bool)
+    assert None is config('UndefinedKey', default=None, cast=int)
 
 def test_ini_empty(config):
     assert '' is config('KeyEmpty', default=None)
-
 
 def test_ini_support_space(config):
     assert 'text' == config('IgnoreSpace')
