@@ -69,6 +69,9 @@ class Config(object):
 
             value = default
 
+            if cast is not bool:
+                return value
+
         if isinstance(cast, Undefined):
             cast = self._cast_do_nothing
         elif cast is bool:
