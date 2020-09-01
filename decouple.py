@@ -67,10 +67,7 @@ class Config(object):
             if isinstance(default, Undefined):
                 raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
 
-            value = default
-
-            if cast is not bool:
-                return value
+            return default
 
         if isinstance(cast, Undefined):
             cast = self._cast_do_nothing
