@@ -18,10 +18,6 @@ for separating settings from code.
     :target: https://travis-ci.org/henriquebastos/python-decouple
     :alt: Build Status
 
-.. image:: https://landscape.io/github/henriquebastos/python-decouple/master/landscape.png
-    :target: https://landscape.io/github/henriquebastos/python-decouple/master
-    :alt: Code Health
-
 .. image:: https://img.shields.io/pypi/v/python-decouple.svg
     :target: https://pypi.python.org/pypi/python-decouple/
     :alt: Latest PyPI version
