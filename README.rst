@@ -30,7 +30,7 @@ for separating settings from code.
 Why?
 ====
 
-Web framework's settings stores many different kinds of parameters:
+The settings files in web frameworks store many different kinds of parameters:
 
 * Locale and i18n;
 * Middlewares and Installed Apps;
@@ -38,7 +38,7 @@ Web framework's settings stores many different kinds of parameters:
 * Credentials to external services such as Amazon S3 or Twitter;
 * Per-deploy values such as the canonical hostname for the instance.
 
-The first 2 are *project settings* the last 3 are *instance settings*.
+The first 2 are *project settings* and the last 3 are *instance settings*.
 
 You should be able to change *instance settings* without redeploying your app.
 
@@ -95,7 +95,7 @@ Decouple's default encoding is `UTF-8`.
 But you can specify your preferred encoding.
 
 Since `config` is lazy and only opens the configuration file when it's first needed, you have the chance to change
-it's encoding right after import.
+its encoding right after import.
 
 .. code-block:: python
 
@@ -103,7 +103,7 @@ it's encoding right after import.
     config.encoding = 'cp1251'
     SECRET_KEY = config('SECRET_KEY')
 
-If you wish to fallback to your system's default encoding do:
+If you wish to fall back to your system's default encoding use:
 
 .. code-block:: python
 
@@ -112,7 +112,7 @@ If you wish to fallback to your system's default encoding do:
     config.encoding = locale.getpreferredencoding(False)
     SECRET_KEY = config('SECRET_KEY')
 
-Where the settings data are stored?
+Where is the settings data stored?
 -----------------------------------
 
 *Decouple* supports both *.ini* and *.env* files.
@@ -137,7 +137,7 @@ Simply create a ``settings.ini`` next to your configuration module in the form:
 Env file
 ~~~~~~~~
 
-Simply create a ``.env`` text file on your repository's root directory in the form:
+Simply create a ``.env`` text file in your repository's root directory in the form:
 
 .. code-block:: console
 
@@ -151,7 +151,7 @@ Simply create a ``.env`` text file on your repository's root directory in the fo
 Example: How do I use it with Django?
 -------------------------------------
 
-Given that I have a ``.env`` file at my repository root directory, here is a snippet of my ``settings.py``.
+Given that I have a ``.env`` file in my repository's root directory, here is a snippet of my ``settings.py``.
 
 I also recommend using `pathlib <https://docs.python.org/3/library/pathlib.html>`_
 and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
@@ -194,8 +194,8 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 Attention with *undefined* parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-On the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
-have a default value to fallback if it does not exist on the ``.env`` file.
+In the above example, all configuration parameters except ``SECRET_KEY = config('SECRET_KEY')``
+have a default value in case it does not exist in the ``.env`` file.
 
 If ``SECRET_KEY`` is not present in the ``.env``, *decouple* will raise an ``UndefinedValueError``.
 
@@ -216,14 +216,14 @@ To override a config parameter you can simply do:
     DEBUG=True python manage.py
 
 
-How it works?
+How does it work?
 =============
 
 *Decouple* always searches for *Options* in this order:
 
 #. Environment variables;
 #. Repository: ini or .env file;
-#. default argument passed to config.
+#. Default argument passed to config.
 
 There are 4 classes doing the magic:
 
