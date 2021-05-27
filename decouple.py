@@ -150,9 +150,11 @@ class AutoConfig(object):
         caller's path.
 
     """
-    SUPPORTED = OrderedDict([
-        ('settings.ini', RepositoryIni),
-        ('.env', RepositoryEnv),
+    DEFAULTS = ['settings.ini', '.env']
+
+    EXT = OrderedDict([
+        ('ini', RepositoryIni),
+        ('env', RepositoryEnv),
     ])
 
     encoding = DEFAULT_ENCODING
@@ -160,10 +162,17 @@ class AutoConfig(object):
     def __init__(self, search_path=None):
         self.search_path = search_path
         self.config = None
+        self.filename = None
 
     def _find_file(self, path):
+        # look if file was configured with config_file
+        if self.filename:
+            filename = os.path.join(path, self.filename)
+            if os.path.isfile(filename):
+                return filename
+
         # look for all files in the current path
-        for configfile in self.SUPPORTED:
+        for configfile in self.DEFAULTS:
             filename = os.path.join(path, configfile)
             if os.path.isfile(filename):
                 return filename
@@ -182,7 +191,10 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
+
+        ext = os.path.basename(filename).split('.')[-1]
+
+        Repository = self.EXT.get(ext, RepositoryEmpty)
 
         self.config = Config(Repository(filename, encoding=self.encoding))
 
@@ -191,6 +203,9 @@ class AutoConfig(object):
         frame = sys._getframe()
         path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
         return path
+
+    def config_file(self, filename):
+        self.filename = filename
 
     def __call__(self, *args, **kwargs):
         if not self.config:
