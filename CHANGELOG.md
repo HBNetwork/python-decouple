@@ -2,8 +2,21 @@ Changelog
 =========
 
 
-(unreleased)
-------------
+3.3 (2019-11-13)
+----------------
+
+- Enforce search order in settings files
+- Switch to using strtobool (#71)
+
+
+3.2 (2019-11-13)
+----------------
+
+- Fixed typos in documentation
+- Add editorconfig file
+- Fix handling for configuration values that end in single or double quotes (#78)
+- Add support for encoding env files in other encodings (#62) (#64)
+- Improve csv documentation (#59)
 - Add Changelog #44
 - Fixed typo. [Vik]
 - Fix the code blocks inline in the documentation, adding two quotes. [Manaia Junior]
