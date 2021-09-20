@@ -103,7 +103,8 @@ class RepositoryIni(RepositoryEmpty):
     def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.parser = ConfigParser()
         with open(source, encoding=encoding) as file_:
-            self.parser.readfp(file_)
+            config_reader = self.parser.read_file if sys.version_info >= (3, 2, 0) else self.parser.readfp
+            config_reader(file_)
 
     def __contains__(self, key):
         return (key in os.environ or
