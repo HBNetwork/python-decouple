@@ -2,4 +2,4 @@ mock==2.0.0
 pytest==3.2.0
 tox==2.7.0
 docutils==0.14
-Pygments==2.2.0
+Pygments>=2.7.4
