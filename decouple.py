@@ -8,14 +8,21 @@ from collections import OrderedDict
 from distutils.util import strtobool
 
 # Useful for very coarse version differentiation.
-PY3 = sys.version_info[0] == 3
+PYVERSION = sys.version_info
 
-if PY3:
+
+if PYVERSION >= (3, 0, 0):
     from configparser import ConfigParser
     text_type = str
 else:
     from ConfigParser import SafeConfigParser as ConfigParser
     text_type = unicode
+
+if PYVERSION >= (3, 2, 0):
+    read_config = lambda parser, file: parser.read_file(file)
+else:
+    read_config = lambda parser, file: parser.readfp(file)
+
 
 DEFAULT_ENCODING = 'UTF-8'
 
@@ -103,8 +110,7 @@ class RepositoryIni(RepositoryEmpty):
     def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.parser = ConfigParser()
         with open(source, encoding=encoding) as file_:
-            config_reader = self.parser.read_file if sys.version_info >= (3, 2, 0) else self.parser.readfp
-            config_reader(file_)
+            read_config(self.parser, file_)
 
     def __contains__(self, key):
         return (key in os.environ or

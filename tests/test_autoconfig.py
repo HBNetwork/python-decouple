@@ -2,7 +2,7 @@
 import os
 import pytest
 from mock import patch, mock_open
-from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty, DEFAULT_ENCODING, PY3
+from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty, DEFAULT_ENCODING
 
 
 def test_autoconfig_env():
