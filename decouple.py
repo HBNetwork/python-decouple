@@ -136,7 +136,7 @@ class RepositoryEnv(RepositoryEmpty):
                 k = k.strip()
                 v = v.strip()
                 if len(v) >= 2 and ((v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"')):
-                    v = v.strip('\'"')
+                    v = v[1:-1]
                 self.data[k] = v
 
     def __contains__(self, key):
