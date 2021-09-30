@@ -217,7 +217,7 @@ To override a config parameter you can simply do:
 
 
 How does it work?
-=============
+=================
 
 *Decouple* always searches for *Options* in this order:
 
