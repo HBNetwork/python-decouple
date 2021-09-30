@@ -47,6 +47,8 @@ KeyIsSingleQuote='
 KeyIsDoubleQuote="
 KeyHasTwoSingleQuote="'Y'"
 KeyHasTwoDoubleQuote='"Y"'
+KeyHasMixedQuotesAsData1="Y'
+KeyHasMixedQuotesAsData2='Y"
 '''
 
 @pytest.fixture(scope='module')
@@ -132,3 +134,5 @@ def test_env_with_quote(config):
     assert "'" == config('KeyIsSingleQuote')
     assert "'Y'" == config('KeyHasTwoSingleQuote')
     assert '"Y"' == config('KeyHasTwoDoubleQuote')
+    assert '''"Y\'''' == config('KeyHasMixedQuotesAsData1')
+    assert '''\'Y"''' == config('KeyHasMixedQuotesAsData2')
