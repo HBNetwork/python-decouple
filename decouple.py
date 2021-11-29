@@ -5,7 +5,7 @@ import string
 from shlex import shlex
 from io import open
 from collections import OrderedDict
-from distutils.util import strtobool
+from util import strtobool
 
 # Useful for very coarse version differentiation.
 PYVERSION = sys.version_info
