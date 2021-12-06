@@ -2,6 +2,25 @@ Changelog
 =========
 
 
+3.5 (2021-09-30)
+----------------
+
+- Fix: fix syntax warnings due to comparison of literals using `is`
+- Fix: avoid DeprecationError on ConfigParser.readfp()
+- Add Tox Github Action
+- Documentation fixups
+- Security: bump Pygments version to >=2.7.4 
+- Fix .env -file quote stripping 
+- Changelog catchups for 3.2 and 3.3
+
+
+3.4 (2021-01-05)
+----------------
+
+- Add choices helper
+- Documentation fixups
+
+
 3.3 (2019-11-13)
 ----------------
 
