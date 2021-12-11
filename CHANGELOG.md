@@ -1,6 +1,10 @@
 Changelog
 =========
 
+3.6 (dev)
+---------
+
+- Add support for Docker secrets.
 
 3.5 (2021-09-30)
 ----------------

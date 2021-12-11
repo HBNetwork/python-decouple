@@ -146,6 +146,28 @@ class RepositoryEnv(RepositoryEmpty):
         return self.data[key]
 
 
+class RepositorySecret(RepositoryEmpty):
+    """
+    Retrieves option keys from files,
+    where title of file is a key, content of file is a value
+    e.g. Docker swarm secrets
+    """
+
+    def __init__(self, source='/run/secrets/'):
+        self.data = {}
+
+        ls = os.listdir(source)
+        for file in ls:
+            with open(os.path.join(source, file), 'r') as f:
+                self.data[file] = f.read()
+
+    def __contains__(self, key):
+        return key in os.environ or key in self.data
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
