@@ -292,3 +292,23 @@ class Choices(object):
                 ).format(value, self._valid_values))
         else:
             return transform
+
+
+def multi_config(*env_var_names: str, cast=str, default=undefined):
+    """Allows loading a config from multiple variable locations
+    """
+    if not env_var_names:
+        raise ValueError('Expected at least 1 environment variable name to be given')
+    for env_var in env_var_names:
+        try:
+            val = config(env_var, cast=cast)
+            return val
+        except UndefinedValueError:
+            pass  # just try the next one
+
+    if default != undefined:
+        return default
+
+    raise UndefinedValueError(
+        f'[{"|".join(env_var_names)}] not found. Declare one as an envvar or define a default value.'
+    )
