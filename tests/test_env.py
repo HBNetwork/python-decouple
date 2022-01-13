@@ -3,7 +3,7 @@ import os
 import sys
 from mock import patch
 import pytest
-from decouple import Config, RepositoryEnv, UndefinedValueError
+from decouple import Config, multi_config, RepositoryEnv, UndefinedValueError
 
 
 # Useful for very coarse version differentiation.
@@ -123,6 +123,7 @@ def test_env_support_space(config):
 def test_env_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
 
+
 def test_env_with_quote(config):
     assert "text'" == config('KeyWithSingleQuoteEnd')
     assert 'text"' == config('KeyWithDoubleQuoteEnd')
@@ -136,3 +137,18 @@ def test_env_with_quote(config):
     assert '"Y"' == config('KeyHasTwoDoubleQuote')
     assert '''"Y\'''' == config('KeyHasMixedQuotesAsData1')
     assert '''\'Y"''' == config('KeyHasMixedQuotesAsData2')
+
+
+def test_multi_config_with_single_envvar(config):
+    assert False is multi_config('KeyEmpty', cast=bool, config=config)
+    assert ' text' == config('RespectDoubleQuoteSpace')
+    assert 'te"xt' == config('KeyWithDoubleQuoteMid')
+
+
+def test_multi_config_with_multiple_envvar(config):
+    assert False is multi_config('KeyFalse', 'KeyTrue', cast=bool, config=config)
+    assert True is multi_config('FakeKeyFalse', 'KeyTrue', cast=bool, config=config)
+
+def test_multi_config_error_on_missing_all(config):
+    with pytest.raises(UndefinedValueError):
+        multi_config('UndefinedKey1', 'UndefinedKey2', config=config)

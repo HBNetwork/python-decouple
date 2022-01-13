@@ -294,7 +294,7 @@ class Choices(object):
             return transform
 
 
-def multi_config(*env_var_names: str, cast=str, default=undefined):
+def multi_config(*env_var_names: str, cast=str, default=undefined, config: Config = config):
     """Allows loading a config from multiple variable locations
     """
     if not env_var_names:
