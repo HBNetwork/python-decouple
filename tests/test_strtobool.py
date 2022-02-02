@@ -2,14 +2,14 @@ import pytest
 from decouple import strtobool
 
 
-def test_true_values():
-    for item in ("Y", "YES", "T", "TRUE", "ON", "1"):
-        assert strtobool(item)
+@pytest.mark.parametrize("value", ("Y", "YES", "T", "TRUE", "ON", "1"))
+def test_true_values(value):
+    assert strtobool(value)
 
 
-def test_false_values():
-    for item in ("N", "NO", "F", "FALSE", "OFF", "0"):
-        assert strtobool(item) is False
+@pytest.mark.parametrize("value", ("N", "NO", "F", "FALSE", "OFF", "0"))
+def test_false_values(value):
+    assert strtobool(value) is False
 
 
 def test_invalid():
