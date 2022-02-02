@@ -20,9 +20,9 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  py37:
+  py310:
     runs-on: ubuntu-latest
-    container: python:3.7-alpine
+    container: python:3.10-alpine
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -35,7 +35,7 @@ jobs:
 
     - name: Run Tox
       env:
-        TOXENV: py37
+        TOXENV: py310
       run: |
         "$HOME/.local/bin/tox"
 
