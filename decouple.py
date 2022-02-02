@@ -5,7 +5,6 @@ import string
 from shlex import shlex
 from io import open
 from collections import OrderedDict
-from distutils.util import strtobool
 
 # Useful for very coarse version differentiation.
 PYVERSION = sys.version_info
@@ -25,6 +24,22 @@ else:
 
 
 DEFAULT_ENCODING = 'UTF-8'
+
+
+# Python 3.10 don't have strtobool anymore. So we move it here.
+TRUE_VALUES = {"y", "yes", "t", "true", "on", "1"}
+FALSE_VALUES = {"n", "no", "f", "false", "off", "0"}
+
+def strtobool(value):
+    value = value.lower()
+
+    if value in TRUE_VALUES:
+        return True
+    elif value in FALSE_VALUES:
+        return False
+
+    raise ValueError("Invalid truth value: " + value)
+
 
 class UndefinedValueError(Exception):
     pass
@@ -282,7 +297,6 @@ class Choices(object):
         self._valid_values = []
         self._valid_values.extend(self.flat)
         self._valid_values.extend([value for value, _ in self.choices])
-
 
     def __call__(self, value):
         transform = self.cast(value)
