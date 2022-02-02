@@ -1,10 +1,11 @@
 Changelog
 =========
 
-3.6 (dev)
----------
+3.6 (2022-02-02)
+----------------
 
 - Add support for Docker secrets.
+- Fix deprecation warning on Python 3.10
 
 3.5 (2021-09-30)
 ----------------
