@@ -26,15 +26,19 @@ else:
 DEFAULT_ENCODING = 'UTF-8'
 
 
+# Python 3.10 don't have strtobool anymore. So we move it here.
+TRUE_VALUES = {"y", "yes", "t", "true", "on", "1"}
+FALSE_VALUES = {"n", "no", "f", "false", "off", "0"}
+
 def strtobool(value):
-    _value = value.lower()
-    if _value in {"y", "yes", "t", "true", "on", "1"}:
-        result = True
-    elif _value in {"n", "no", "f", "false", "off", "0"}:
-        result = False
-    else:
-        raise ValueError(" ".join(("invalid truth value", value)))
-    return result
+    value = value.lower()
+
+    if value in TRUE_VALUES:
+        return True
+    elif value in FALSE_VALUES:
+        return False
+
+    raise ValueError("Invalid truth value: " + value)
 
 
 class UndefinedValueError(Exception):
