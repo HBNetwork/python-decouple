@@ -242,6 +242,12 @@ class AutoConfig(object):
 
         return self.config(*args, **kwargs)
 
+    def __getattr__(self, key):
+        return self(key)
+
+    def __getitem__(self, key):
+        return self(key)
+
 
 # A pré-instantiated AutoConfig to improve decouple's usability
 # now just import config and start using with no configuration.
