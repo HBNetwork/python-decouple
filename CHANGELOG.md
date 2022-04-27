@@ -14,8 +14,8 @@ Changelog
 - Fix: avoid DeprecationError on ConfigParser.readfp()
 - Add Tox Github Action
 - Documentation fixups
-- Security: bump Pygments version to >=2.7.4 
-- Fix .env -file quote stripping 
+- Security: bump Pygments version to >=2.7.4
+- Fix .env -file quote stripping
 - Changelog catchups for 3.2 and 3.3
 
 
@@ -99,7 +99,7 @@ Changelog
 ----------------
 - Improve README
 - Add notice on fail fast policy. [Henrique Bastos]
-- Fix boolean convertion of default value. [Henrique Bastos]
+- Fix boolean conversion of default value. [Henrique Bastos]
 - Update setup.py. [Henrique Bastos]
 - Add docutils and pygments to development's requirements.txt. [Henrique Bastos]
 - Upgrade development dependencies. [Henrique Bastos]
@@ -113,7 +113,7 @@ Changelog
 - Add comments. [Henrique Bastos]
 - Remove unused variables. [Henrique Bastos]
 - Add Repository classes. [Henrique Bastos]
-- Chage ConfigEnv behavior to raise when option or default are undefined. [Henrique Bastos]
+- Change ConfigEnv behavior to raise when option or default are undefined. [Henrique Bastos]
 
 
 2.1 (2015-03-19)
