@@ -31,6 +31,8 @@ TRUE_VALUES = {"y", "yes", "t", "true", "on", "1"}
 FALSE_VALUES = {"n", "no", "f", "false", "off", "0"}
 
 def strtobool(value):
+    if isinstance(value, bool):
+        return value
     value = value.lower()
 
     if value in TRUE_VALUES:
