@@ -5,6 +5,12 @@ from mock import patch, mock_open
 from decouple import AutoConfig, UndefinedValueError, RepositoryEmpty, DEFAULT_ENCODING
 
 
+@pytest.mark.parametrize('path', [['env', 'project']], indirect=True)
+def test_autoconfig_attr(config):
+    assert 'ENV' == config.KEY
+    assert 'ENV' == config['KEY']
+
+
 def test_autoconfig_env():
     config = AutoConfig()
     path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'env', 'project')
