@@ -29,3 +29,12 @@ def test_csv_quoted_parse():
     assert ['foo', "'bar, baz'", "'qux"] == csv(''' foo ,"'bar, baz'", "'qux"''')
 
     assert ['foo', '"bar, baz"', '"qux'] == csv(""" foo ,'"bar, baz"', '"qux'""")
+
+
+def test_csv_backslash():
+    csv = Csv()
+
+    raw = r'first,^https://\w+\.example\.com$,third'
+
+    assert ['first', '^https://\\w+\\.example\\.com$', 'third'] == \
+        csv(raw), "Csv helper removed backslashes."
