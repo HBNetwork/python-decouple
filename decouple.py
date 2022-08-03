@@ -243,6 +243,11 @@ class AutoConfig(object):
             self._load(self.search_path or self._caller_path())
 
         return self.config(*args, **kwargs)
+    
+    def get(self, *args, **kwargs):
+        if not self.config:
+            self._load(self.search_path or self._caller_path())
+        return self.config(*args, **kwargs)
 
 
 # A pré-instantiated AutoConfig to improve decouple's usability
