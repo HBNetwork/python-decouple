@@ -6,6 +6,8 @@ from shlex import shlex
 from io import open
 from collections import OrderedDict
 
+import dotenv
+
 # Useful for very coarse version differentiation.
 PYVERSION = sys.version_info
 
@@ -142,19 +144,7 @@ class RepositoryEnv(RepositoryEmpty):
     Retrieves option keys from .env files with fall back to os.environ.
     """
     def __init__(self, source, encoding=DEFAULT_ENCODING):
-        self.data = {}
-
-        with open(source, encoding=encoding) as file_:
-            for line in file_:
-                line = line.strip()
-                if not line or line.startswith('#') or '=' not in line:
-                    continue
-                k, v = line.split('=', 1)
-                k = k.strip()
-                v = v.strip()
-                if len(v) >= 2 and ((v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"')):
-                    v = v[1:-1]
-                self.data[k] = v
+        self.data = dotenv.dotenv_values(source, interpolate=False)
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
