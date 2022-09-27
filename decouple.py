@@ -40,7 +40,7 @@ def strtobool(value):
     elif value in FALSE_VALUES:
         return False
 
-    raise ValueError("Invalid truth value: " + value)
+    raise ValueError(f"Invalid truth value: {value}")
 
 
 class UndefinedValueError(Exception):
@@ -71,7 +71,7 @@ class Config(object):
         Helper to convert config values to boolean as ConfigParser do.
         """
         value = str(value)
-        return bool(value) if value == '' else bool(strtobool(value))
+        return bool(strtobool(value)) if value else bool(value)
 
     @staticmethod
     def _cast_do_nothing(value):
@@ -87,10 +87,13 @@ class Config(object):
             value = os.environ[option]
         elif option in self.repository:
             value = self.repository[option]
-        else:
-            if isinstance(default, Undefined):
-                raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+        elif isinstance(default, Undefined):
+            raise UndefinedValueError(
+                f'{option} not found. Declare it as envvar or define a default value.'
+            )
 
+
+        else:
             value = default
 
         if isinstance(cast, Undefined):
