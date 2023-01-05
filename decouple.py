@@ -271,6 +271,9 @@ class Csv(object):
 
     def __call__(self, value):
         """The actual transformation"""
+        if value is None:
+            return self.post_process()
+
         transform = lambda s: self.cast(s.strip(self.strip))
 
         splitter = shlex(value, posix=True)
