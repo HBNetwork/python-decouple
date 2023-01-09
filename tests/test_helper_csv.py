@@ -29,3 +29,8 @@ def test_csv_quoted_parse():
     assert ['foo', "'bar, baz'", "'qux"] == csv(''' foo ,"'bar, baz'", "'qux"''')
 
     assert ['foo', '"bar, baz"', '"qux'] == csv(""" foo ,'"bar, baz"', '"qux'""")
+
+
+def test_csv_none():
+    csv = Csv()
+    assert [] == csv(None)
