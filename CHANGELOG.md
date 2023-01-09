@@ -1,6 +1,11 @@
 Changelog
 =========
 
+3.7 (2023-01-09)
+----------------
+
+- Fix `Csv` cast hanging with `default=None`, now returning an empty list. (#149)
+
 3.6 (2022-02-02)
 ----------------
 
