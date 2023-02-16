@@ -11,10 +11,10 @@ PYVERSION = sys.version_info
 
 
 if PYVERSION >= (3, 0, 0):
-    from configparser import ConfigParser
+    from configparser import ConfigParser, NoOptionError
     text_type = str
 else:
-    from ConfigParser import SafeConfigParser as ConfigParser
+    from ConfigParser import SafeConfigParser as ConfigParser, NoOptionError
     text_type = unicode
 
 if PYVERSION >= (3, 2, 0):
@@ -134,7 +134,10 @@ class RepositoryIni(RepositoryEmpty):
                 self.parser.has_option(self.SECTION, key))
 
     def __getitem__(self, key):
-        return self.parser.get(self.SECTION, key)
+        try:
+            return self.parser.get(self.SECTION, key)
+        except NoOptionError:
+            raise KeyError(key)
 
 
 class RepositoryEnv(RepositoryEmpty):

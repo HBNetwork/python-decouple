@@ -121,3 +121,8 @@ def test_ini_undefined_but_present_in_os_environ(config):
 
 def test_ini_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
+
+
+def test_ini_repo_keyerror(config):
+    with pytest.raises(KeyError):
+        config.repository['UndefinedKey']
