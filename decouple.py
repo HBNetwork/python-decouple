@@ -222,7 +222,8 @@ class AutoConfig(object):
             filename = os.path.join(path, configfile)
             if os.path.isfile(filename):
                 filenames.append(filename)
-        return filenames
+        if filenames:
+            return filenames
 
         # search the parent
         parent = os.path.dirname(path)
