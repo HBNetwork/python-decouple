@@ -217,10 +217,12 @@ class AutoConfig(object):
 
     def _find_file(self, path):
         # look for all files in the current path
+        filenames = []
         for configfile in self.SUPPORTED:
             filename = os.path.join(path, configfile)
             if os.path.isfile(filename):
-                return filename
+                filenames.append(filename)
+        return filenames
 
         # search the parent
         parent = os.path.dirname(path)
