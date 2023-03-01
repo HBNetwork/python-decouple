@@ -136,3 +136,7 @@ def test_env_with_quote(config):
     assert '"Y"' == config('KeyHasTwoDoubleQuote')
     assert '''"Y\'''' == config('KeyHasMixedQuotesAsData1')
     assert '''\'Y"''' == config('KeyHasMixedQuotesAsData2')
+
+def test_env_repo_keyerror(config):
+    with pytest.raises(KeyError):
+        config.repository['UndefinedKey']
