@@ -97,3 +97,13 @@ def test_autoconfig_env_default_encoding():
             assert config.encoding == DEFAULT_ENCODING
             assert 'ENV' == config('KEY', default='ENV')
             mopen.assert_called_once_with(filename, encoding=DEFAULT_ENCODING)
+
+
+def test_autoconfig_no_repository():
+    path = os.path.join(os.path.dirname(__file__), 'autoconfig', 'ini', 'no_repository')
+    config = AutoConfig(path)
+
+    with pytest.raises(UndefinedValueError):
+        config('KeyNotInEnvAndNotInRepository')
+
+    assert isinstance(config.config.repository, RepositoryEmpty)
