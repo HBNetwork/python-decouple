@@ -12,10 +12,10 @@ PYVERSION = sys.version_info
 
 
 if PYVERSION >= (3, 0, 0):
-    from configparser import ConfigParser
+    from configparser import ConfigParser, NoOptionError
     text_type = str
 else:
-    from ConfigParser import SafeConfigParser as ConfigParser
+    from ConfigParser import SafeConfigParser as ConfigParser, NoOptionError
     text_type = unicode
 
 if PYVERSION >= (3, 2, 0):
@@ -227,7 +227,7 @@ class AutoConfig(object):
 
         # search the parent
         parent = os.path.dirname(path)
-        if parent and parent != os.path.abspath(os.sep):
+        if parent and os.path.normcase(parent) != os.path.normcase(os.path.abspath(os.sep)):
             return self._find_file(parent)
 
         # reached root without finding any files.
