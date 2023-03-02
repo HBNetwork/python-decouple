@@ -5,7 +5,6 @@ import string
 from shlex import shlex
 from io import open
 from collections import ChainMap, OrderedDict
-from configparser import ConfigParser, NoOptionError
 
 # Useful for very coarse version differentiation.
 PYVERSION = sys.version_info
