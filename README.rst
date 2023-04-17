@@ -383,6 +383,52 @@ You can also use a Django-like choices tuple:
     >>> config('CONNECTION_TYPE', cast=Choices(choices=CONNECTION_OPTIONS))
     'bluetooth'
 
+Frequently Asked Questions
+==========================
+
+## 1. How to specify the `.env` path?
+
+```python
+import os
+from decouple import Config, RepositoryEnv
+config = Config(RepositoryEnv("path/to/.env"))
+```
+
+## 2. How to use python-decouple with Jupyter?
+
+```python
+import os
+from decouple import Config, RepositoryEnv
+config = Config(RepositoryEnv("path/to/.env"))
+```
+
+## 3. How to specify a file with another name instead of `.env`?
+
+```python
+import os
+from decouple import Config, RepositoryEnv
+config = Config(RepositoryEnv("path/to/somefile-like-env"))
+```
+
+## 4. How to define the path to my env file on a env var?
+
+```python
+import os
+from decouple import Config, RepositoryEnv
+
+DOTENV_FILE = os.environ.get("DOTENV_FILE", ".env") # only place using os.environ
+config = Config(RepositoryEnv(DOTENV_FILE))
+```
+
+## 5. How can I have multiple *env* files working together?
+
+```python
+from collections import ChainMap
+from decouple import Config, RepositoryEnv
+
+config = Config(ChainMap(RepositoryEnv(".private.env"), RepositoryEnv(".env")))
+```
+
 Contribute
 ==========
 
