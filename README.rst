@@ -63,7 +63,7 @@ Since it's a non-empty string, it will be evaluated as True.
 
 
 Usage
-======
+=====
 
 Install:
 
@@ -92,6 +92,7 @@ Then use it on your ``settings.py``.
 
 Encodings
 ---------
+
 Decouple's default encoding is `UTF-8`.
 
 But you can specify your preferred encoding.
@@ -116,7 +117,7 @@ If you wish to fall back to your system's default encoding use:
 
 
 Where is the settings data stored?
------------------------------------
+----------------------------------
 
 *Decouple* supports both *.ini* and *.env* files.
 
