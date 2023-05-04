@@ -403,9 +403,11 @@ Frequently Asked Questions
 
 .. code-block:: python
 
-    >>> import os
-    >>> from decouple import Config, RepositoryEnv
-    >>> config = Config(RepositoryEnv("path/to/.env"))
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/.env"))
 
 
 2) How to use python-decouple with Jupyter?
@@ -413,9 +415,11 @@ Frequently Asked Questions
 
 .. code-block:: python
 
-    >>> import os
-    >>> from decouple import Config, RepositoryEnv
-    >>> config = Config(RepositoryEnv("path/to/.env"))
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/.env"))
 
 
 3) How to specify a file with another name instead of `.env`?
@@ -423,9 +427,11 @@ Frequently Asked Questions
 
 .. code-block:: python
 
-    >>> import os
-    >>> from decouple import Config, RepositoryEnv
-    >>> config = Config(RepositoryEnv("path/to/somefile-like-env"))
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/somefile-like-env"))
 
 
 4) How to define the path to my env file on a env var?
@@ -433,10 +439,12 @@ Frequently Asked Questions
 
 .. code-block:: python
 
-    >>> import os
-    >>> from decouple import Config, RepositoryEnv
-    >>> DOTENV_FILE = os.environ.get("DOTENV_FILE", ".env") # only place using os.environ
-    >>> config = Config(RepositoryEnv(DOTENV_FILE))
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    DOTENV_FILE = os.environ.get("DOTENV_FILE", ".env") # only place using os.environ
+    config = Config(RepositoryEnv(DOTENV_FILE))
 
 
 5) How can I have multiple *env* files working together?
@@ -444,9 +452,11 @@ Frequently Asked Questions
 
 .. code-block:: python
 
-    >>> from collections import ChainMap
-    >>> from decouple import Config, RepositoryEnv
-    >>> config = Config(ChainMap(RepositoryEnv(".private.env"), RepositoryEnv(".env")))
+    from collections import ChainMap
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(ChainMap(RepositoryEnv(".private.env"), RepositoryEnv(".env")))
 
 
 Contribute
