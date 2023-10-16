@@ -83,10 +83,10 @@ class Config(object):
         """
 
         # We can't avoid __contains__ because value may be empty.
-        if option in os.environ:
-            value = os.environ[option]
-        elif option in self.repository:
+        if option in self.repository:
             value = self.repository[option]
+        elif option in os.environ:
+            value = os.environ[option]
         else:
             if isinstance(default, Undefined):
                 raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
