@@ -241,6 +241,47 @@ class AutoConfig(object):
         path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
         return path
 
+    if sys.version_info >= (3, 5, 0):
+        from typing import Callable, TypeVar, overload
+        _Def  = TypeVar('_Def')
+        _Cast = TypeVar('_Cast')
+
+        @overload
+        def __call__(
+            self,
+            option # type: str
+        ): # type: (...) -> str
+            ''''''
+            pass
+        @overload
+        def __call__(
+            self,
+            option, # type: str
+            default # type: _Def
+        ): # type: (...) -> str | _Def
+            ''''''
+            pass
+        @overload
+        def __call__(
+            self,
+            option, # type: str
+            cast # type: Callable[[str], _Cast]
+        ): # type: (...) -> _Cast
+            '''
+            `cast` has to be passed as a keyword argument for this usage,
+            otherwise, it will actually run as overload 2
+            '''
+            pass
+        @overload
+        def __call__(
+            self,
+            option,  # type: str
+            default, # type: _Def 
+            cast,    # type: Callable[[str | _Def], _Cast]
+        ): # type: (...) -> _Cast
+            ''''''
+            pass
+
     def __call__(self, *args, **kwargs):
         if not self.config:
             self._load(self.search_path or self._caller_path())
