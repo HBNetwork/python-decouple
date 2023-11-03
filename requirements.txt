@@ -4,4 +4,4 @@ tox==2.7.0
 docutils==0.14
 Pygments>=2.7.4
 twine
-virtualenv==20.21.1
+virtualenv<=20.21.1
