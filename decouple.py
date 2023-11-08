@@ -188,6 +188,79 @@ class RepositorySecret(RepositoryEmpty):
         return self.data[key]
 
 
+class RepositoryString(RepositoryEmpty):
+    """
+    Repository class to retrieve options from a string.
+
+    Parses a string formatted like a `.env` file into a dictionary of options.
+    This class is an extension of the `RepositoryEmpty` class that provides a
+    way to read configuration keys from an environment string.
+
+    Attributes:
+        data (dict): A dictionary to hold the parsed key-value pairs.
+    """
+
+    def __init__(self, source):
+        """
+        Initializes the RepositoryString with a given string source.
+
+        The provided string should have one "KEY=value" pair per line, similar
+        to a `.env` file format. Lines starting with `#` are considered as
+        comments and ignored. Surrounding whitespace is stripped from keys
+        and values.
+
+        Args:
+            source (str): The string source to parse.
+        """
+        self.data = {}
+        source_lines = source.split('\n')
+
+        for line in source_lines:
+            line = line.strip()
+
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip()
+
+            if len(value) >= 2 and (
+                (value[0] == "'" and value[-1] == "'")
+                or (value[0] == '"' and value[-1] == '"')
+            ):
+                value = value[1:-1]
+
+            self.data[key] = value
+
+    def __contains__(self, key):
+        """
+        Check if a key is present in the repository or the environment.
+
+        Args:
+            key (str): The key to check for presence.
+
+        Returns:
+            bool: True if key is in the repository or os.environ, False otherwise.
+        """
+        return key in os.environ or key in self.data
+
+    def __getitem__(self, key):
+        """
+        Retrieve the value associated with the given key.
+
+        Args:
+            key (str): The key to retrieve the value for.
+
+        Returns:
+            str: The value associated with the key.
+
+        Raises:
+            KeyError: If the key is not found in the repository.
+        """
+        return self.data[key]
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
