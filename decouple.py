@@ -43,6 +43,13 @@ def strtobool(value):
     raise ValueError("Invalid truth value: " + value)
 
 
+def _strip_quotes(value):
+    if len(value) >= 2 and ((value[0] == "'" and value[-1] == "'") or (value[0] == '"' and value[-1] == '"')):
+        return value[1:-1]
+    else:
+        return value
+
+
 class UndefinedValueError(Exception):
     pass
 
@@ -84,7 +91,7 @@ class Config(object):
 
         # We can't avoid __contains__ because value may be empty.
         if option in os.environ:
-            value = os.environ[option]
+            value = _strip_quotes(os.environ[option])
         elif option in self.repository:
             value = self.repository[option]
         else:
@@ -155,9 +162,7 @@ class RepositoryEnv(RepositoryEmpty):
                 k, v = line.split('=', 1)
                 k = k.strip()
                 v = v.strip()
-                if len(v) >= 2 and ((v[0] == "'" and v[-1] == "'") or (v[0] == '"' and v[-1] == '"')):
-                    v = v[1:-1]
-                self.data[k] = v
+                self.data[k] = _strip_quotes(v)
 
     def __contains__(self, key):
         return key in os.environ or key in self.data
