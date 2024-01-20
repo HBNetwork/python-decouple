@@ -188,29 +188,30 @@ class RepositorySecret(RepositoryEmpty):
         return self.data[key]
 
 
-class RepositoryString(RepositoryEmpty):
+class RepositoryGoogleSecretManager(RepositoryEnv):
     """
-    Repository class to retrieve options from a string.
+    Repository class for retrieving configuration options from Google Secret Manager.
 
-    Parses a string formatted like a `.env` file into a dictionary of options.
-    This class is an extension of the `RepositoryEmpty` class that provides a
-    way to read configuration keys from an environment string.
+    This class extends `RepositoryEnv` to specifically handle configurations stored in
+    Google Secret Manager. It parses strings formatted in a similar way to `.env` files,
+    converting them into a dictionary of configuration options.
 
     Attributes:
-        data (dict): A dictionary to hold the parsed key-value pairs.
+        data (dict): A dictionary holding the parsed key-value pairs from the Google
+                     Secret Manager source.
     """
 
     def __init__(self, source):
         """
-        Initializes the RepositoryString with a given string source.
+        Initialize RepositoryGoogleSecretManager with a Google Secret Manager source.
 
-        The provided string should have one "KEY=value" pair per line, similar
-        to a `.env` file format. Lines starting with `#` are considered as
-        comments and ignored. Surrounding whitespace is stripped from keys
-        and values.
+        The source string is expected to have one "KEY=value" pair per line, akin to
+        the `.env` file format. Lines beginning with `#` are treated as comments and
+        are disregarded. Keys and values are trimmed of surrounding whitespace for
+        accurate parsing.
 
         Args:
-            source (str): The string source to parse.
+            source (str): The string source from Google Secret Manager to be parsed.
         """
         self.data = {}
         source_lines = source.split('\n')
@@ -232,33 +233,6 @@ class RepositoryString(RepositoryEmpty):
                 value = value[1:-1]
 
             self.data[key] = value
-
-    def __contains__(self, key):
-        """
-        Check if a key is present in the repository or the environment.
-
-        Args:
-            key (str): The key to check for presence.
-
-        Returns:
-            bool: True if key is in the repository or os.environ, False otherwise.
-        """
-        return key in os.environ or key in self.data
-
-    def __getitem__(self, key):
-        """
-        Retrieve the value associated with the given key.
-
-        Args:
-            key (str): The key to retrieve the value for.
-
-        Returns:
-            str: The value associated with the key.
-
-        Raises:
-            KeyError: If the key is not found in the repository.
-        """
-        return self.data[key]
 
 
 class AutoConfig(object):
