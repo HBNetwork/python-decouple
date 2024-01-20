@@ -188,6 +188,53 @@ class RepositorySecret(RepositoryEmpty):
         return self.data[key]
 
 
+class RepositoryGoogleSecretManager(RepositoryEnv):
+    """
+    Repository class for retrieving configuration options from Google Secret Manager.
+
+    This class extends `RepositoryEnv` to specifically handle configurations stored in
+    Google Secret Manager. It parses strings formatted in a similar way to `.env` files,
+    converting them into a dictionary of configuration options.
+
+    Attributes:
+        data (dict): A dictionary holding the parsed key-value pairs from the Google
+                     Secret Manager source.
+    """
+
+    def __init__(self, source):
+        """
+        Initialize RepositoryGoogleSecretManager with a Google Secret Manager source.
+
+        The source string is expected to have one "KEY=value" pair per line, akin to
+        the `.env` file format. Lines beginning with `#` are treated as comments and
+        are disregarded. Keys and values are trimmed of surrounding whitespace for
+        accurate parsing.
+
+        Args:
+            source (str): The string source from Google Secret Manager to be parsed.
+        """
+        self.data = {}
+        source_lines = source.split('\n')
+
+        for line in source_lines:
+            line = line.strip()
+
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip()
+
+            if len(value) >= 2 and (
+                (value[0] == "'" and value[-1] == "'")
+                or (value[0] == '"' and value[-1] == '"')
+            ):
+                value = value[1:-1]
+
+            self.data[key] = value
+
+
 class AutoConfig(object):
     """
     Autodetects the config file and type.
