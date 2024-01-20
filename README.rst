@@ -1,3 +1,4 @@
+========================================================
 Python Decouple: Strict separation of settings from code
 ========================================================
 
@@ -22,8 +23,6 @@ for separating settings from code.
     :target: https://pypi.python.org/pypi/python-decouple/
     :alt: Latest PyPI version
 
-
-
 .. contents:: Summary
 
 
@@ -41,6 +40,7 @@ The settings files in web frameworks store many different kinds of parameters:
 The first 2 are *project settings* and the last 3 are *instance settings*.
 
 You should be able to change *instance settings* without redeploying your app.
+
 
 Why not just use environment variables?
 ---------------------------------------
@@ -60,6 +60,7 @@ It will print **True**, because ``os.environ['DEBUG']`` returns the **string** `
 Since it's a non-empty string, it will be evaluated as True.
 
 *Decouple* provides a solution that doesn't look like a workaround: ``config('DEBUG', cast=bool)``.
+
 
 Usage
 =====
@@ -88,8 +89,10 @@ Then use it on your ``settings.py``.
      EMAIL_HOST = config('EMAIL_HOST', default='localhost')
      EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 
+
 Encodings
 ---------
+
 Decouple's default encoding is `UTF-8`.
 
 But you can specify your preferred encoding.
@@ -112,10 +115,12 @@ If you wish to fall back to your system's default encoding use:
     config.encoding = locale.getpreferredencoding(False)
     SECRET_KEY = config('SECRET_KEY')
 
+
 Where is the settings data stored?
------------------------------------
+----------------------------------
 
 *Decouple* supports both *.ini* and *.env* files.
+
 
 Ini file
 ~~~~~~~~
@@ -134,6 +139,7 @@ Simply create a ``settings.ini`` next to your configuration module in the form:
 
 *Note*: Since ``ConfigParser`` supports *string interpolation*, to represent the character ``%`` you need to escape it as ``%%``.
 
+
 Env file
 ~~~~~~~~
 
@@ -147,6 +153,7 @@ Simply create a ``.env`` text file in your repository's root directory in the fo
     DATABASE_URL=mysql://myuser:mypassword@myhost/mydatabase
     PERCENTILE=90%
     #COMMENTED=42
+
 
 Example: How do I use it with Django?
 -------------------------------------
@@ -191,6 +198,7 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
 
     # ...
 
+
 Attention with *undefined* parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -200,6 +208,7 @@ have a default value in case it does not exist in the ``.env`` file.
 If ``SECRET_KEY`` is not present in the ``.env``, *decouple* will raise an ``UndefinedValueError``.
 
 This *fail fast* policy helps you avoid chasing misbehaviours when you eventually forget a parameter.
+
 
 Overriding config files with environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -297,6 +306,7 @@ Let's see some examples for the above mentioned cases:
 
 As you can see, ``cast`` is very flexible. But the last example got a bit complex.
 
+
 Built in Csv Helper
 ~~~~~~~~~~~~~~~~~~~
 
@@ -339,6 +349,7 @@ By default *Csv* returns a ``list``, but you can get a ``tuple`` or whatever you
     >>> os.environ['SECURE_PROXY_SSL_HEADER'] = 'HTTP_X_FORWARDED_PROTO, https'
     >>> config('SECURE_PROXY_SSL_HEADER', cast=Csv(post_process=tuple))
     ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 Built in Choices helper
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -383,56 +394,71 @@ You can also use a Django-like choices tuple:
     >>> config('CONNECTION_TYPE', cast=Choices(choices=CONNECTION_OPTIONS))
     'bluetooth'
 
+
 Frequently Asked Questions
 ==========================
+
 
 1) How to specify the `.env` path?
 ----------------------------------
 
-```python
-import os
-from decouple import Config, RepositoryEnv
-config = Config(RepositoryEnv("path/to/.env"))
-```
+.. code-block:: python
+
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/.env"))
+
 
 2) How to use python-decouple with Jupyter?
 -------------------------------------------
 
-```python
-import os
-from decouple import Config, RepositoryEnv
-config = Config(RepositoryEnv("path/to/.env"))
-```
+.. code-block:: python
+
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/.env"))
+
 
 3) How to specify a file with another name instead of `.env`?
 ----------------------------------------------------------------
 
-```python
-import os
-from decouple import Config, RepositoryEnv
-config = Config(RepositoryEnv("path/to/somefile-like-env"))
-```
+.. code-block:: python
+
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(RepositoryEnv("path/to/somefile-like-env"))
+
 
 4) How to define the path to my env file on a env var?
 --------------------------------------------------------
 
-```python
-import os
-from decouple import Config, RepositoryEnv
+.. code-block:: python
 
-DOTENV_FILE = os.environ.get("DOTENV_FILE", ".env") # only place using os.environ
-config = Config(RepositoryEnv(DOTENV_FILE))
-```
+    import os
+    from decouple import Config, RepositoryEnv
+    
+    
+    DOTENV_FILE = os.environ.get("DOTENV_FILE", ".env") # only place using os.environ
+    config = Config(RepositoryEnv(DOTENV_FILE))
+
 
 5) How can I have multiple *env* files working together?
 --------------------------------------------------------
 
-```python
-from collections import ChainMap
-from decouple import Config, RepositoryEnv
+.. code-block:: python
 
-config = Config(ChainMap(RepositoryEnv(".private.env"), RepositoryEnv(".env")))
-```
+    from collections import ChainMap
+    from decouple import Config, RepositoryEnv
+    
+    
+    config = Config(ChainMap(RepositoryEnv(".private.env"), RepositoryEnv(".env")))
+
 
 Contribute
 ==========
