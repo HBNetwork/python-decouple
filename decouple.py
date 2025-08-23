@@ -18,9 +18,9 @@ else:
     text_type = unicode
 
 if PYVERSION >= (3, 2, 0):
-    read_config = lambda parser, file: parser.read_file(file)
+    def read_config(parser, file): return parser.read_file(file)
 else:
-    read_config = lambda parser, file: parser.readfp(file)
+    def read_config(parser, file): return parser.readfp(file)
 
 
 DEFAULT_ENCODING = 'UTF-8'
@@ -29,6 +29,7 @@ DEFAULT_ENCODING = 'UTF-8'
 # Python 3.10 don't have strtobool anymore. So we move it here.
 TRUE_VALUES = {"y", "yes", "t", "true", "on", "1"}
 FALSE_VALUES = {"n", "no", "f", "false", "off", "0"}
+
 
 def strtobool(value):
     if isinstance(value, bool):
@@ -89,7 +90,8 @@ class Config(object):
             value = self.repository[option]
         else:
             if isinstance(default, Undefined):
-                raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+                raise UndefinedValueError(
+                    '{} not found. Declare it as envvar or define a default value.'.format(option))
 
             value = default
 
@@ -134,6 +136,10 @@ class RepositoryIni(RepositoryEmpty):
                 self.parser.has_option(self.SECTION, key))
 
     def __getitem__(self, key):
+
+        if key in os.environ:
+            return os.environ[key]
+
         try:
             return self.parser.get(self.SECTION, key)
         except NoOptionError:
@@ -144,6 +150,7 @@ class RepositoryEnv(RepositoryEmpty):
     """
     Retrieves option keys from .env files with fall back to os.environ.
     """
+
     def __init__(self, source, encoding=DEFAULT_ENCODING):
         self.data = {}
 
@@ -163,7 +170,7 @@ class RepositoryEnv(RepositoryEmpty):
         return key in os.environ or key in self.data
 
     def __getitem__(self, key):
-        return self.data[key]
+        return os.environ[key] or self.data[key]
 
 
 class RepositorySecret(RepositoryEmpty):
@@ -185,7 +192,7 @@ class RepositorySecret(RepositoryEmpty):
         return key in os.environ or key in self.data
 
     def __getitem__(self, key):
-        return self.data[key]
+        return os.environ[key] or self.data[key]
 
 
 class AutoConfig(object):
@@ -231,7 +238,8 @@ class AutoConfig(object):
             filename = self._find_file(os.path.abspath(path))
         except Exception:
             filename = ''
-        Repository = self.SUPPORTED.get(os.path.basename(filename), RepositoryEmpty)
+        Repository = self.SUPPORTED.get(
+            os.path.basename(filename), RepositoryEmpty)
 
         self.config = Config(Repository(filename, encoding=self.encoding))
 
@@ -253,6 +261,7 @@ class AutoConfig(object):
 config = AutoConfig()
 
 # Helpers
+
 
 class Csv(object):
     """
@@ -277,7 +286,7 @@ class Csv(object):
         if value is None:
             return self.post_process()
 
-        transform = lambda s: self.cast(s.strip(self.strip))
+        def transform(s): return self.cast(s.strip(self.strip))
 
         splitter = shlex(value, posix=True)
         splitter.whitespace = self.delimiter
@@ -310,7 +319,7 @@ class Choices(object):
         transform = self.cast(value)
         if transform not in self._valid_values:
             raise ValueError((
-                    'Value not in list: {!r}; valid values are {!r}'
-                ).format(value, self._valid_values))
+                'Value not in list: {!r}; valid values are {!r}'
+            ).format(value, self._valid_values))
         else:
             return transform
