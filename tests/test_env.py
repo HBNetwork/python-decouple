@@ -110,7 +110,7 @@ def test_env_default_none(config):
 
 
 def test_env_empty(config):
-    assert '' == config('KeyEmpty', default=None)
+    assert None is config('KeyEmpty', default=None)
     assert '' == config('KeyEmpty')
 
 

@@ -71,7 +71,7 @@ class Config(object):
         Helper to convert config values to boolean as ConfigParser do.
         """
         value = str(value)
-        return bool(value) if value == '' else bool(strtobool(value))
+        return False if value == '' else bool(strtobool(value))
 
     @staticmethod
     def _cast_do_nothing(value):
@@ -97,6 +97,12 @@ class Config(object):
             cast = self._cast_do_nothing
         elif cast is bool:
             cast = self._cast_boolean
+
+        if value is None or value == '':
+            if not isinstance(default, Undefined):
+                value = default
+            elif cast == self._cast_boolean:
+                return False
 
         return cast(value)
 
@@ -274,7 +280,7 @@ class Csv(object):
 
     def __call__(self, value):
         """The actual transformation"""
-        if value is None:
+        if value is None or value == '':
             return self.post_process()
 
         transform = lambda s: self.cast(s.strip(self.strip))
