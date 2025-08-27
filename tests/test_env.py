@@ -140,3 +140,37 @@ def test_env_with_quote(config):
 def test_env_repo_keyerror(config):
     with pytest.raises(KeyError):
         config.repository['UndefinedKey']
+
+def test_env_iter(config):
+    assert [
+        'KeyTrue',
+        'KeyOne',
+        'KeyYes',
+        'KeyOn',
+        'KeyY',
+        'KeyFalse',
+        'KeyZero',
+        'KeyNo',
+        'KeyN',
+        'KeyOff',
+        'KeyEmpty',
+        'PercentNotEscaped',
+        'NoInterpolation',
+        'IgnoreSpace',
+        'RespectSingleQuoteSpace',
+        'RespectDoubleQuoteSpace',
+        'KeyOverrideByEnv',
+
+        'KeyWithSingleQuoteEnd',
+        'KeyWithSingleQuoteMid',
+        'KeyWithSingleQuoteBegin',
+        'KeyWithDoubleQuoteEnd',
+        'KeyWithDoubleQuoteMid',
+        'KeyWithDoubleQuoteBegin',
+        'KeyIsSingleQuote',
+        'KeyIsDoubleQuote',
+        'KeyHasTwoSingleQuote',
+        'KeyHasTwoDoubleQuote',
+        'KeyHasMixedQuotesAsData1',
+        'KeyHasMixedQuotesAsData2',
+    ] == list(config)

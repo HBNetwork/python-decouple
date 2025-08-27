@@ -106,6 +106,9 @@ class Config(object):
         """
         return self.get(*args, **kwargs)
 
+    def __iter__(self):
+        return iter(self.repository)
+
 
 class RepositoryEmpty(object):
     def __init__(self, source='', encoding=DEFAULT_ENCODING):
@@ -116,6 +119,9 @@ class RepositoryEmpty(object):
 
     def __getitem__(self, key):
         return None
+
+    def __iter__(self):
+        return iter(())
 
 
 class RepositoryIni(RepositoryEmpty):
@@ -138,6 +144,9 @@ class RepositoryIni(RepositoryEmpty):
             return self.parser.get(self.SECTION, key)
         except NoOptionError:
             raise KeyError(key)
+
+    def __iter__(self):
+        return iter(self.parser[self.SECTION])
 
 
 class RepositoryEnv(RepositoryEmpty):
@@ -165,6 +174,9 @@ class RepositoryEnv(RepositoryEmpty):
     def __getitem__(self, key):
         return self.data[key]
 
+    def __iter__(self):
+        return iter(self.data)
+
 
 class RepositorySecret(RepositoryEmpty):
     """
@@ -186,6 +198,9 @@ class RepositorySecret(RepositoryEmpty):
 
     def __getitem__(self, key):
         return self.data[key]
+
+    def __iter__(self):
+        return iter(self.data)
 
 
 class AutoConfig(object):
@@ -225,7 +240,9 @@ class AutoConfig(object):
         # reached root without finding any files.
         return ''
 
-    def _load(self, path):
+    def _load(self, path=None):
+        path = path or self.search_path or self._caller_path()
+
         # Avoid unintended permission errors
         try:
             filename = self._find_file(os.path.abspath(path))
@@ -241,9 +258,15 @@ class AutoConfig(object):
         path = os.path.dirname(frame.f_back.f_back.f_code.co_filename)
         return path
 
+    def __iter__(self):
+        if not self.config:
+            self._load()
+
+        return iter(self.config)
+
     def __call__(self, *args, **kwargs):
         if not self.config:
-            self._load(self.search_path or self._caller_path())
+            self._load()
 
         return self.config(*args, **kwargs)
 
