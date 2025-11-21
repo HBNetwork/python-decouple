@@ -179,7 +179,7 @@ and `dj-database-url <https://pypi.python.org/pypi/dj-database-url/>`_.
     DATABASES = {
         'default': config(
             'DATABASE_URL',
-            default='sqlite:///' + BASE_DIR.child('db.sqlite3'),
+            default='sqlite:///' + BASE_DIR.joinpath('db.sqlite3'),
             cast=db_url
         )
     }
