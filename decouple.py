@@ -77,9 +77,12 @@ class Config(object):
     def _cast_do_nothing(value):
         return value
 
-    def get(self, option, default=undefined, cast=undefined):
+    def get(self, option, default=undefined, cast=undefined,fallback=None):
         """
         Return the value for option or default if defined.
+
+        - default: used and cast if the option is missing.
+        - fallback: returned as-is when option and default are missing.
         """
 
         # We can't avoid __contains__ because value may be empty.
@@ -88,10 +91,13 @@ class Config(object):
         elif option in self.repository:
             value = self.repository[option]
         else:
-            if isinstance(default, Undefined):
-                raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+            # If no default and fallback is provided -> return fallback directly (no casting)
+                if isinstance(default, Undefined):
+                    if fallback is not None and not isinstance(fallback, Undefined):
+                        return fallback
+                    raise UndefinedValueError('{} not found. Declare it as envvar or define a default value.'.format(option))
+                value = default
 
-            value = default
 
         if isinstance(cast, Undefined):
             cast = self._cast_do_nothing
@@ -100,11 +106,14 @@ class Config(object):
 
         return cast(value)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, fallback=None, **kwargs):
         """
-        Convenient shortcut to get.
-        """
-        return self.get(*args, **kwargs)
+    Shortcut to get().
+
+    - default: used (and cast) if option is missing.
+    - fallback: returned as-is if option and default are missing.
+    """
+        return self.get(*args, fallback=fallback, **kwargs)
 
 
 class RepositoryEmpty(object):
