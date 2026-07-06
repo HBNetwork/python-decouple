@@ -252,6 +252,41 @@ class AutoConfig(object):
 # now just import config and start using with no configuration.
 config = AutoConfig()
 
+
+# A Config that solely reads from os.environ and never loads
+# a .env file or any other source.
+# Use it like config and together with read_env() to explicitly
+# control when variables are loaded into os.environ.
+env = Config(RepositoryEmpty())
+
+
+def read_env(source=None, encoding=DEFAULT_ENCODING, override=False):
+    """
+    Explicitly load environment variables from a source into os.environ.
+
+    Parameters
+    ----------
+    source : str, optional
+        Path to a .env file. If not provided, autodetects the file
+        starting from the caller's path.
+    encoding : str, optional
+        Encoding used to read the source file.
+    override : bool, optional
+        If True, existing os.environ values are overridden.
+    """
+    if source is None:
+        config('', '')  # Force config to load the source file
+        repository = config.config.repository
+    elif source.endswith('.ini'):
+        repository = RepositoryIni(source, encoding=encoding)
+    else:
+        repository = RepositoryEnv(source, encoding=encoding)
+    data = repository.data
+    for key, value in data.items():
+        if override or key not in os.environ:
+            os.environ[key] = value
+
+
 # Helpers
 
 class Csv(object):
