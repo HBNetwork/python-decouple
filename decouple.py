@@ -152,6 +152,10 @@ class RepositoryEnv(RepositoryEmpty):
                 line = line.strip()
                 if not line or line.startswith('#') or '=' not in line:
                     continue
+                if line.startswith('export ') or line.startswith('export\t'):
+                    line = line[7:].lstrip()
+                    if not line or '=' not in line:
+                        continue
                 k, v = line.split('=', 1)
                 k = k.strip()
                 v = v.strip()

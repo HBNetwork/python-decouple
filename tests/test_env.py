@@ -49,6 +49,8 @@ KeyHasTwoSingleQuote="'Y'"
 KeyHasTwoDoubleQuote='"Y"'
 KeyHasMixedQuotesAsData1="Y'
 KeyHasMixedQuotesAsData2='Y"
+export ExportedKey=fromexport
+export	ExportedTab=tabs
 '''
 
 @pytest.fixture(scope='module')
@@ -140,3 +142,8 @@ def test_env_with_quote(config):
 def test_env_repo_keyerror(config):
     with pytest.raises(KeyError):
         config.repository['UndefinedKey']
+
+
+def test_env_export_prefix(config):
+    assert 'fromexport' == config('ExportedKey')
+    assert 'tabs' == config('ExportedTab')
