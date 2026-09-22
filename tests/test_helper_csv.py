@@ -1,5 +1,6 @@
 # coding: utf-8
-from decouple import Csv
+import pytest
+from decouple import Config, Csv
 
 
 def test_csv():
@@ -34,3 +35,23 @@ def test_csv_quoted_parse():
 def test_csv_none():
     csv = Csv()
     assert [] == csv(None)
+
+
+@pytest.mark.parametrize('value', [None, ''])
+@pytest.mark.parametrize('post_process, expected', [
+    (list, []), (tuple, ()), (sum, 0), (sorted, []),
+])
+def test_csv_empty_post_process(value, post_process, expected):
+    csv = Csv(cast=int, post_process=post_process)
+    assert expected == csv(value)
+
+
+def test_csv_none_default_with_custom_post_process(monkeypatch):
+    monkeypatch.delenv('CSV_OPTION', raising=False)
+
+    def post_process(values):
+        return next(values, 'empty')
+
+    csv = Csv(cast=pytest.fail, post_process=post_process)
+    config = Config({})
+    assert 'empty' == config('CSV_OPTION', default=None, cast=csv)
