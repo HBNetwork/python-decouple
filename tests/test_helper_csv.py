@@ -34,3 +34,16 @@ def test_csv_quoted_parse():
 def test_csv_none():
     csv = Csv()
     assert [] == csv(None)
+
+
+def test_csv_hash_characters_are_values():
+    csv = Csv()
+    assert ['https://example.com/#section', 'next'] == \
+        csv('https://example.com/#section,next')
+    assert ['#first', 'second#part', '#last'] == \
+        csv('#first,second#part,#last')
+
+
+def test_csv_hash_characters_with_custom_processing():
+    csv = Csv(delimiter=';', post_process=tuple)
+    assert ('#first', 'second#part') == csv('#first;second#part')
