@@ -280,6 +280,7 @@ class Csv(object):
         transform = lambda s: self.cast(s.strip(self.strip))
 
         splitter = shlex(value, posix=True)
+        splitter.commenters = ''
         splitter.whitespace = self.delimiter
         splitter.whitespace_split = True
 
