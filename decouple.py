@@ -178,7 +178,10 @@ class RepositorySecret(RepositoryEmpty):
 
         ls = os.listdir(source)
         for file in ls:
-            with open(os.path.join(source, file), 'r') as f:
+            path = os.path.join(source, file)
+            if not os.path.isfile(path):
+                continue
+            with open(path, 'r') as f:
                 self.data[file] = f.read()
 
     def __contains__(self, key):
