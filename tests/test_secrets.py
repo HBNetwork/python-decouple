@@ -36,3 +36,14 @@ def test_secret_repo_keyerror():
 
     with pytest.raises(KeyError):
         repo['UndefinedKey']
+
+
+def test_secret_repository_ignores_subdirectories(tmpdir):
+    secret_dir = tmpdir.mkdir('nested')
+    secret_dir.join('not_a_secret').write('ignored')
+    tmpdir.join('db_password').write('world')
+
+    repository = RepositorySecret(str(tmpdir))
+
+    assert repository['db_password'] == 'world'
+    assert 'nested' not in repository
