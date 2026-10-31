@@ -115,7 +115,7 @@ class RepositoryEmpty(object):
         return False
 
     def __getitem__(self, key):
-        return None
+        raise KeyError(key)
 
 
 class RepositoryIni(RepositoryEmpty):
