@@ -100,6 +100,13 @@ def test_env_undefined_but_present_in_os_environ(config):
     del os.environ['KeyOnlyEnviron']
 
 
+def test_env_empty_environment_overrides_file_and_default(config, monkeypatch):
+    monkeypatch.setenv('KeyOverrideByEnv', '')
+    assert config('KeyOverrideByEnv') == ''
+    assert config('KeyOverrideByEnv', default='fallback') == ''
+    assert config('KeyOverrideByEnv', default=True, cast=bool) is False
+
+
 def test_env_undefined(config):
     with pytest.raises(UndefinedValueError):
         config('UndefinedKey')
