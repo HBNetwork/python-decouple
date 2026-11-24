@@ -119,6 +119,13 @@ def test_ini_undefined_but_present_in_os_environ(config):
     del os.environ['KeyOnlyEnviron']
 
 
+def test_ini_empty_environment_overrides_file_and_default(config, monkeypatch):
+    monkeypatch.setenv('KeyOverrideByEnv', '')
+    assert config('KeyOverrideByEnv') == ''
+    assert config('KeyOverrideByEnv', default='fallback') == ''
+    assert config('KeyOverrideByEnv', default=True, cast=bool) is False
+
+
 def test_ini_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
 
