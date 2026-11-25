@@ -134,6 +134,8 @@ class RepositoryIni(RepositoryEmpty):
                 self.parser.has_option(self.SECTION, key))
 
     def __getitem__(self, key):
+        if key in os.environ:
+            return os.environ[key]
         try:
             return self.parser.get(self.SECTION, key)
         except NoOptionError:
@@ -163,6 +165,8 @@ class RepositoryEnv(RepositoryEmpty):
         return key in os.environ or key in self.data
 
     def __getitem__(self, key):
+        if key in os.environ:
+            return os.environ[key]
         return self.data[key]
 
 
@@ -185,6 +189,8 @@ class RepositorySecret(RepositoryEmpty):
         return key in os.environ or key in self.data
 
     def __getitem__(self, key):
+        if key in os.environ:
+            return os.environ[key]
         return self.data[key]
 
 

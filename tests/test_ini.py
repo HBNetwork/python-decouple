@@ -123,6 +123,12 @@ def test_ini_empty_string_means_false(config):
     assert False is config('KeyEmpty', cast=bool)
 
 
+def test_ini_repo_reads_os_environ(config):
+    os.environ['KeyOnlyEnviron'] = 'This'
+    assert 'This' == config.repository['KeyOnlyEnviron']
+    del os.environ['KeyOnlyEnviron']
+
+
 def test_ini_repo_keyerror(config):
     with pytest.raises(KeyError):
         config.repository['UndefinedKey']

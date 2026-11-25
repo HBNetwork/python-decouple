@@ -30,6 +30,15 @@ def test_secret_overriden_by_environ():
     assert 'hi' == config('db_user')
     del os.environ['db_user']
 
+def test_secret_repo_reads_os_environ():
+    path = os.path.join(os.path.dirname(__file__), 'secrets')
+    repo = RepositorySecret(path)
+
+    os.environ['KeyOnlyEnviron'] = 'SOMETHING'
+    assert 'SOMETHING' == repo['KeyOnlyEnviron']
+    del os.environ['KeyOnlyEnviron']
+
+
 def test_secret_repo_keyerror():
     path = os.path.join(os.path.dirname(__file__), 'secrets')
     repo = RepositorySecret(path)
